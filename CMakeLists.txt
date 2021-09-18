@@ -14,4 +14,4 @@ add_executable(css_e ${sources})
 list(FILTER sources EXCLUDE REGEX "main.c")
 add_library(css ${sources})
 
-set_target_properties(css PROPERTIES PUBLIC_HEADER "css.h")
+set_target_properties(css PROPERTIES PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/include/css.h)

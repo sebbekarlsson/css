@@ -82,3 +82,19 @@ CSSAST *css_get_value(CSSAST *ast, char *key) {
   list_free(declarations);
   return value_ast;
 }
+
+char *css_get_value_string(CSS *ast, char *key) {
+  CSSAST *val = css_get_value(ast, key);
+  return val->value_str ? strdup(val->value_str) : 0;
+}
+int css_get_value_int(CSS *ast, char *key) {
+
+  CSSAST *val = css_get_value(ast, key);
+  return val->value_int;
+}
+float css_get_value_float(CSS *ast, char *key) {
+
+  CSSAST *val = css_get_value(ast, key);
+
+  return val->value_float ? val->value_float : val->value_double;
+}
