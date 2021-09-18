@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.20)
+
+project(css)
+
+
+FILE(GLOB sources ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c)
+
+add_compile_options(-g -Wall)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+add_executable(css_e ${sources})
+
+list(FILTER sources EXCLUDE REGEX "main.c")
+add_library(css ${sources})
+
+set_target_properties(css PROPERTIES PUBLIC_HEADER "css.h")
