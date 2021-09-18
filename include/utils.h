@@ -1,5 +1,5 @@
-#ifndef CSS_UTILS_H
-#define CSS_UTILS_H
+#ifndef XCSS_UTILS_H
+#define XCSS_UTILS_H
 char *char_to_string(char c);
 
 #define STR_APPEND_CHAR(s, c)                                                  \

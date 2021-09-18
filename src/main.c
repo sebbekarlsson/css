@@ -4,7 +4,7 @@
 int main(int argc, char *argv[]) {
   CSSAST *cssdata = css("{"
                      "  background-color: red;"
-                     "  color: black;"
+                     "  color: #00FF00;"
                      "  top: 10px;"
                      "}");
 

@@ -1,5 +1,5 @@
-#ifndef CSS_PARSER_H
-#define CSS_PARSER_H
+#ifndef XCSS_PARSER_H
+#define XCSS_PARSER_H
 #include <AST.h>
 #include <lexer.h>
 #include <parser.h>

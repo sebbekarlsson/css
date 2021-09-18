@@ -1,5 +1,5 @@
-#ifndef CSS_LEXER_H
-#define CSS_LEXER_H
+#ifndef XCSS_LEXER_H
+#define XCSS_LEXER_H
 #include <token.h>
 typedef struct {
   char *value;

@@ -4,6 +4,7 @@
 #include <string.h>
 #include <token.h>
 #include <utils.h>
+#include <parser.h>
 
 CSSAST *init_css_ast(int type) {
   CSSAST *ast = NEW(CSSAST);
@@ -60,3 +61,5 @@ char *css_ast_selector_to_string(CSSAST *ast) {
 
   return value ? value : strdup("");
 }
+
+

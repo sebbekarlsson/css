@@ -1,8 +1,6 @@
-#ifndef CSSL_H
-#define CSSL_H
 #include <lexer.h>
 #include <parser.h>
-
+#include <AST.h>
 
 CSSAST *css(char *value);
 
@@ -18,4 +16,3 @@ float css_get_value_float(CSSAST *ast, char *key);
 void css_free(CSSAST *css);
 
 CSSAST *css_get_rule(CSSAST *css, char *selector);
-#endif

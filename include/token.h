@@ -1,5 +1,5 @@
-#ifndef CSS_TOKEN_H
-#define CSS_TOKEN_H
+#ifndef XCSS_TOKEN_H
+#define XCSS_TOKEN_H
 typedef struct {
   char *value;
 
@@ -20,6 +20,7 @@ typedef struct {
     TOKEN_INT,
     TOKEN_FLOAT,
     TOKEN_DOUBLE,
+    TOKEN_HASH,
     TOKEN_EOF
   } type;
 } CSSToken;

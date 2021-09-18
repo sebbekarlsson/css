@@ -101,6 +101,24 @@ CSSToken *css_lexer_parse_number(CSSLexer *lexer) {
   return token;
 }
 
+CSSToken *css_lexer_parse_hash(CSSLexer *lexer) {
+  char *value = 0;
+  char delim = lexer->c;
+  STR_APPEND_CHAR(value, lexer->c);
+  css_lexer_advance(lexer);
+
+  while (lexer->c != delim && (isdigit(lexer->c) || isalnum(lexer->c)) && !LEXER_DONE(lexer)) {
+    STR_APPEND_CHAR(value, lexer->c);
+    css_lexer_advance(lexer);
+  }
+
+  CSSToken *token = init_css_token(TOKEN_STR, value);
+
+  free(value);
+
+  return token;
+}
+
 CSSToken *css_lexer_next_token(CSSLexer *lexer) {
   while (!(LEXER_DONE(lexer))) {
     css_lexer_skip_whitespace(lexer);
@@ -114,6 +132,8 @@ CSSToken *css_lexer_next_token(CSSLexer *lexer) {
     case '\'':
     case '"':
       return css_lexer_parse_string(lexer);
+    case '#':
+      return css_lexer_parse_hash(lexer);
     case '{':
       LEXER_TOK(lexer, TOKEN_LBRACE);
       break;

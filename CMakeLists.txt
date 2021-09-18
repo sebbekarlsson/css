@@ -1,22 +1,37 @@
 cmake_minimum_required(VERSION 3.20)
 
+
 project(css)
 
 
-FILE(GLOB sources src/*.c)
-FILE(GLOB lib_sources src/*.c)
+file(GLOB PUBLIC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
+file(GLOB css_sources ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c)
 
-add_compile_options(-g -Wall -fPIC)
+
+add_executable(css_e ${css_sources})
+
+
+list(FILTER css_ources EXCLUDE REGEX "main.c")
+
+add_library(css ${css_sources})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-add_executable(css_e ${sources})
+target_include_directories(
+  css
+    PUBLIC
+      $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/css>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      ${CMAKE_CURRENT_BINARY_DIR}/include
+      ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-list(FILTER sources EXCLUDE REGEX "main.c")
-add_library(css SHARED ${lib_sources})
 
-# target_sources(css_l PUBLIC ${sources})
-
-set_target_properties(css PROPERTIES PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/include/css.h)
-
-add_compile_options(-g -Wall -fPIC)
+target_include_directories(
+  css_e
+    PUBLIC
+      $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/css>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      ${CMAKE_CURRENT_BINARY_DIR}/include
+      ${CMAKE_CURRENT_SOURCE_DIR}/include)

@@ -1,5 +1,5 @@
-#ifndef CSS_MEM_H
-#define CSS_MEM_H
+#ifndef XCSS_MEM_H
+#define XCSS_MEM_H
 #include <stdlib.h>
 void *_scalloc(size_t ts, size_t len);
 
