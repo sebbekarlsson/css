@@ -12,8 +12,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 add_executable(css_e ${sources})
 
 list(FILTER sources EXCLUDE REGEX "main.c")
-add_library(css SHARED ${sources})
+add_library(css_l SHARED ${sources})
 
-set_target_properties(css PROPERTIES PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/include/css.h)
+target_sources(css_l PUBLIC ${sources})
+
+# set_target_properties(css PROPERTIES PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/include/css.h)
 
 add_compile_options(-g -Wall -fPIC)

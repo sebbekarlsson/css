@@ -2,6 +2,7 @@
 #define CSS_PARSER_H
 #include <AST.h>
 #include <lexer.h>
+#include <parser.h>
 typedef struct {
   CSSLexer *lexer;
   CSSToken *token;
