@@ -99,7 +99,7 @@ float css_get_value_float(CSSAST *ast, char *key) {
   CSSAST *val = css_get_value(ast, key);
   if (!val) return 0;
 
-  return val->value_float ? val->value_float : val->value_double;
+  return val->value_float ? val->value_float : val->value_double ? (float)val->value_double : (float)val->value_int;
 }
 
 void css_free(CSSAST *css) {
