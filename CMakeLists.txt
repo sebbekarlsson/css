@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.20)
 project(css)
 
 
-FILE(GLOB sources ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c)
+FILE(GLOB sources src/*.c)
 
 add_compile_options(-g -Wall -fPIC)
 
