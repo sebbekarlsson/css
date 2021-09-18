@@ -5,13 +5,15 @@ project(css)
 
 FILE(GLOB sources ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c)
 
-add_compile_options(-g -Wall)
+add_compile_options(-g -Wall -fPIC)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_executable(css_e ${sources})
 
 list(FILTER sources EXCLUDE REGEX "main.c")
-add_library(css ${sources})
+add_library(css SHARED ${sources})
 
 set_target_properties(css PROPERTIES PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/include/css.h)
+
+add_compile_options(-g -Wall -fPIC)
