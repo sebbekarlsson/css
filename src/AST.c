@@ -46,21 +46,23 @@ void css_free(CSS *css) {
   free(css);
 }
 
-char* ast_to_string(CSSAST* ast) {
+char *ast_to_string(CSSAST *ast) {
   switch (ast->type) {
-    case CSS_AST_BINOP: return ast_binop_to_string(ast); break;
-    default: {
-      return ast->value_str ? strdup(ast->value_str) : strdup("");
-    }break;
+  case CSS_AST_BINOP:
+    return ast_binop_to_string(ast);
+    break;
+  default: {
+    return ast->value_str ? strdup(ast->value_str) : strdup("");
+  } break;
   }
 
   return strdup("");
 }
-char* ast_binop_to_string(CSSAST* ast) {
-  char* v = 0;
+char *ast_binop_to_string(CSSAST *ast) {
+  char *v = 0;
 
   if (ast->left) {
-    char* strv = ast_to_string(ast->left);
+    char *strv = ast_to_string(ast->left);
     str_append(&v, strv);
     free(strv);
   }
@@ -69,7 +71,7 @@ char* ast_binop_to_string(CSSAST* ast) {
     str_append(&v, ast->token->value);
 
   if (ast->right) {
-    char* strv = ast_to_string(ast->right);
+    char *strv = ast_to_string(ast->right);
     str_append(&v, strv);
     free(strv);
   }
@@ -77,14 +79,14 @@ char* ast_binop_to_string(CSSAST* ast) {
   return v ? v : strdup("");
 }
 
+char *css_ast_selector_to_string(CSSAST *ast) {
+  char *value = 0;
 
-char* css_ast_selector_to_string(CSSAST* ast) {
-  char* value = 0;
+  if (!ast->rule_selectors)
+    return value;
 
-  if (!ast->rule_selectors) return value;
-
-  for (int i = 0; i < ast->rule_selectors->size; i++){
-    char* v = ast_to_string(list_at(ast->rule_selectors, i));
+  for (int i = 0; i < ast->rule_selectors->size; i++) {
+    char *v = ast_to_string(list_at(ast->rule_selectors, i));
     str_append(&value, v);
     free(v);
   }

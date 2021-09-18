@@ -12,7 +12,6 @@ CSS *css(char *value) {
   return root;
 }
 
-
 void css_get_rules(CSSAST *ast, List *items) {
 
   if (ast->type == CSS_AST_RULE) {
@@ -39,27 +38,28 @@ void css_get_declarations(CSSAST *ast, List *items) {
   }
 }
 
-CSS* css_get_rule(CSS* css, char* selector) {
-  CSS* rule = 0;
- if (css->children != 0) {
-   for (int i = 0; i < css->children->size; i++) {
-     CSS* child = list_at(css->children, i);
-     if (child->type != CSS_AST_RULE)
-       continue;
-     char* selectorstr = css_ast_selector_to_string(child);
-     if (!selectorstr) continue;
+CSS *css_get_rule(CSS *css, char *selector) {
+  CSS *rule = 0;
+  if (css->children != 0) {
+    for (int i = 0; i < css->children->size; i++) {
+      CSS *child = list_at(css->children, i);
+      if (child->type != CSS_AST_RULE)
+        continue;
+      char *selectorstr = css_ast_selector_to_string(child);
+      if (!selectorstr)
+        continue;
 
-     if (strcmp(selectorstr, selector) == 0) {
-       rule = child;
-       free(selectorstr);
-       break;
-     } else {
-       free(selectorstr);
+      if (strcmp(selectorstr, selector) == 0) {
+        rule = child;
+        free(selectorstr);
+        break;
+      } else {
+        free(selectorstr);
       }
     }
- }
+  }
 
- return rule;
+  return rule;
 }
 
 CSSAST *css_get_value(CSSAST *ast, char *key) {

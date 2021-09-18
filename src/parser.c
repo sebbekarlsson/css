@@ -141,17 +141,9 @@ CSSAST *css_parser_parse_decl(CSSParser *parser) {
   return ast;
 }
 
-CSSAST *css_parser_parse_rule(CSSParser *parser) {
-
-  CSSAST *ast = init_css_ast(CSS_AST_RULE);
-  ast->children = init_list(sizeof(CSSAST *));
-  ast->rule_selectors = init_list(sizeof(CSSAST *));
-
-  list_append(ast->rule_selectors, css_parser_parse_id(parser));
-
-  while (parser->token->type == TOKEN_COMMA) {
-    css_parser_eat(parser, TOKEN_COMMA);
-    list_append(ast->rule_selectors, css_parser_parse_selector(parser));
+void css_parser_parse_rule_body(CSSParser *parser, CSSAST *ast) {
+  if (!ast->children) {
+    ast->children = init_list(sizeof(CSSAST *));
   }
 
   css_parser_eat(parser, TOKEN_LBRACE);
@@ -169,6 +161,21 @@ CSSAST *css_parser_parse_rule(CSSParser *parser) {
   }
 
   css_parser_eat(parser, TOKEN_RBRACE);
+}
+
+CSSAST *css_parser_parse_rule(CSSParser *parser) {
+
+  CSSAST *ast = init_css_ast(CSS_AST_RULE);
+  ast->rule_selectors = init_list(sizeof(CSSAST *));
+
+  list_append(ast->rule_selectors, css_parser_parse_id(parser));
+
+  while (parser->token->type == TOKEN_COMMA) {
+    css_parser_eat(parser, TOKEN_COMMA);
+    list_append(ast->rule_selectors, css_parser_parse_selector(parser));
+  }
+
+  css_parser_parse_rule_body(parser, ast);
 
   return ast;
 }
@@ -205,6 +212,12 @@ CSSAST *css_parser_parse_compound(CSSParser *parser) {
 }
 
 CSSAST *css_parser_parse(CSSParser *parser) {
+  if (parser->token->type == TOKEN_LBRACE) {
+    CSSAST *ast = init_css_ast(CSS_AST_RULE);
+    css_parser_parse_rule_body(parser, ast);
+
+    return ast;
+  }
   return css_parser_parse_compound(parser);
 }
 

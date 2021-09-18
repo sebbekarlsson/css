@@ -1,6 +1,6 @@
 #include <mem.h>
-#include <utils.h>
 #include <string.h>
+#include <utils.h>
 
 char *char_to_string(char c) {
   char *s = scalloc(char *, sizeof(char), 2);
@@ -10,9 +10,8 @@ char *char_to_string(char c) {
   return s;
 }
 
-
-void str_append(char** s1, char* s2) {
-  char* s = *s1;
+void str_append(char **s1, char *s2) {
+  char *s = *s1;
   size_t len = s ? strlen(s) : 0;
   size_t newlen = len + (s2 ? strlen(s2) : 0);
 
