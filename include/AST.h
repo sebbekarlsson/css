@@ -35,10 +35,7 @@ typedef CSSAST CSS;
 
 CSSAST *init_css_ast(int type);
 
-void get_rules(CSSAST *ast, List *items);
-void get_declarations(CSSAST *ast, List *items);
-
-CSSAST *css_get_value(CSSAST *ast, char *key);
-
-void css_free(CSS *css);
+char *ast_to_string(CSSAST *ast);
+char *ast_binop_to_string(CSSAST *ast);
+char *css_ast_selector_to_string(CSSAST *ast);
 #endif

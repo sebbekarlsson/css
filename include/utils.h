@@ -10,6 +10,8 @@ char *char_to_string(char c);
     s[len] = 0;                                                                \
   }
 
+void str_append(char **s1, char *s2);
+
 #define SSTRDUP(s) s ? strdup(s) : s
 
 #define SSTRINT(s) s ? atoi(s) : 0

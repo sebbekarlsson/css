@@ -3,6 +3,7 @@
 #include <mem.h>
 #include <string.h>
 #include <token.h>
+#include <utils.h>
 
 CSSAST *init_css_ast(int type) {
   CSSAST *ast = NEW(CSSAST);
@@ -10,53 +11,6 @@ CSSAST *init_css_ast(int type) {
   ast->children = 0;
 
   return ast;
-}
-
-void get_rules(CSSAST *ast, List *items) {
-
-  if (ast->type == CSS_AST_RULE) {
-    list_append(items, ast);
-  }
-
-  if (ast->children != 0) {
-    for (int i = 0; i < ast->children->size; i++) {
-      get_rules(list_at(ast->children, i), items);
-    }
-  }
-}
-
-void get_declarations(CSSAST *ast, List *items) {
-
-  if (ast->type == CSS_AST_DECL) {
-    list_append(items, ast);
-  }
-
-  if (ast->children != 0) {
-    for (int i = 0; i < ast->children->size; i++) {
-      get_declarations(list_at(ast->children, i), items);
-    }
-  }
-}
-
-CSSAST *css_get_value(CSSAST *ast, char *key) {
-  CSSAST *value_ast = 0;
-  List *declarations = init_list(sizeof(CSSAST *));
-  get_declarations(ast, declarations);
-
-  for (int i = 0; i < declarations->size; i++) {
-    CSSAST *decl = list_at(declarations, i);
-    if (!decl->left)
-      continue;
-    CSSAST *left = decl->left;
-    if (!left->value_str)
-      continue;
-
-    if (strcmp(left->value_str, key) == 0) {
-      value_ast = decl->right;
-    }
-  }
-  list_free(declarations);
-  return value_ast;
 }
 
 void css_free(CSS *css) {
@@ -90,4 +44,50 @@ void css_free(CSS *css) {
   }
 
   free(css);
+}
+
+char* ast_to_string(CSSAST* ast) {
+  switch (ast->type) {
+    case CSS_AST_BINOP: return ast_binop_to_string(ast); break;
+    default: {
+      return ast->value_str ? strdup(ast->value_str) : strdup("");
+    }break;
+  }
+
+  return strdup("");
+}
+char* ast_binop_to_string(CSSAST* ast) {
+  char* v = 0;
+
+  if (ast->left) {
+    char* strv = ast_to_string(ast->left);
+    str_append(&v, strv);
+    free(strv);
+  }
+
+  if (ast->token && ast->token->value)
+    str_append(&v, ast->token->value);
+
+  if (ast->right) {
+    char* strv = ast_to_string(ast->right);
+    str_append(&v, strv);
+    free(strv);
+  }
+
+  return v ? v : strdup("");
+}
+
+
+char* css_ast_selector_to_string(CSSAST* ast) {
+  char* value = 0;
+
+  if (!ast->rule_selectors) return value;
+
+  for (int i = 0; i < ast->rule_selectors->size; i++){
+    char* v = ast_to_string(list_at(ast->rule_selectors, i));
+    str_append(&value, v);
+    free(v);
+  }
+
+  return value ? value : strdup("");
 }
