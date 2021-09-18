@@ -1,19 +1,21 @@
-#ifndef CSS_H
-#define CSS_H
+#ifndef CSSL_H
+#define CSSL_H
 #include <lexer.h>
 #include <parser.h>
-CSS *css(char *value);
 
-void css_get_rules(CSS *ast, List *items);
-void css_get_declarations(CSS *ast, List *items);
 
-CSS *css_get_value(CSS *ast, char *key);
+CSSAST *css(char *value);
 
-char *css_get_value_string(CSS *ast, char *key);
-int css_get_value_int(CSS *ast, char *key);
-float css_get_value_float(CSS *ast, char *key);
+void css_get_rules(CSSAST *ast, List *items);
+void css_get_declarations(CSSAST *ast, List *items);
 
-void css_free(CSS *css);
+CSSAST *css_get_value(CSSAST *ast, char *key);
 
-CSS *css_get_rule(CSS *css, char *selector);
+char *css_get_value_string(CSSAST *ast, char *key);
+int css_get_value_int(CSSAST *ast, char *key);
+float css_get_value_float(CSSAST *ast, char *key);
+
+void css_free(CSSAST *css);
+
+CSSAST *css_get_rule(CSSAST *css, char *selector);
 #endif

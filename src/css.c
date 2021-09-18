@@ -1,7 +1,7 @@
 #include <css.h>
 #include <string.h>
 
-CSS *css(char *value) {
+CSSAST *css(char *value) {
   CSSLexer *lexer = init_css_lexer(value);
   CSSParser *parser = init_css_parser(lexer);
   CSSAST *root = css_parser_parse(parser);
@@ -38,11 +38,11 @@ void css_get_declarations(CSSAST *ast, List *items) {
   }
 }
 
-CSS *css_get_rule(CSS *css, char *selector) {
-  CSS *rule = 0;
+CSSAST *css_get_rule(CSSAST *css, char *selector) {
+  CSSAST *rule = 0;
   if (css->children != 0) {
     for (int i = 0; i < css->children->size; i++) {
-      CSS *child = list_at(css->children, i);
+      CSSAST *child = list_at(css->children, i);
       if (child->type != CSS_AST_RULE)
         continue;
       char *selectorstr = css_ast_selector_to_string(child);
@@ -83,21 +83,54 @@ CSSAST *css_get_value(CSSAST *ast, char *key) {
   return value_ast;
 }
 
-char *css_get_value_string(CSS *ast, char *key) {
+char *css_get_value_string(CSSAST *ast, char *key) {
   CSSAST *val = css_get_value(ast, key);
   if (!val) return 0;
   return val->value_str ? strdup(val->value_str) : 0;
 }
-int css_get_value_int(CSS *ast, char *key) {
+int css_get_value_int(CSSAST *ast, char *key) {
 
   CSSAST *val = css_get_value(ast, key);
   if (!val) return 0;
   return val->value_int;
 }
-float css_get_value_float(CSS *ast, char *key) {
+float css_get_value_float(CSSAST *ast, char *key) {
 
   CSSAST *val = css_get_value(ast, key);
   if (!val) return 0;
 
   return val->value_float ? val->value_float : val->value_double;
+}
+
+void css_free(CSSAST *css) {
+  if (css->token) {
+    css_token_free(css->token);
+  }
+  if (css->left)
+    css_free(css->left);
+  if (css->right)
+    css_free(css->right);
+  if (css->unit)
+    free(css->unit);
+
+  if (css->value_str) {
+    free(css->value_str);
+  }
+  if (css->children != 0) {
+    for (int i = 0; i < css->children->size; i++) {
+      css_free(list_at(css->children, i));
+    }
+
+    list_free(css->children);
+  }
+
+  if (css->rule_selectors != 0) {
+    for (int i = 0; i < css->rule_selectors->size; i++) {
+      css_free(list_at(css->rule_selectors, i));
+    }
+
+    list_free(css->rule_selectors);
+  }
+
+  free(css);
 }

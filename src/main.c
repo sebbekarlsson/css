@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
-  CSS *cssdata = css("{"
+  CSSAST *cssdata = css("{"
                      "  background-color: red;"
                      "  color: black;"
                      "  top: 10px;"

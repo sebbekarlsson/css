@@ -13,39 +13,6 @@ CSSAST *init_css_ast(int type) {
   return ast;
 }
 
-void css_free(CSS *css) {
-  if (css->token) {
-    css_token_free(css->token);
-  }
-  if (css->left)
-    css_free(css->left);
-  if (css->right)
-    css_free(css->right);
-  if (css->unit)
-    free(css->unit);
-
-  if (css->value_str) {
-    free(css->value_str);
-  }
-  if (css->children != 0) {
-    for (int i = 0; i < css->children->size; i++) {
-      css_free(list_at(css->children, i));
-    }
-
-    list_free(css->children);
-  }
-
-  if (css->rule_selectors != 0) {
-    for (int i = 0; i < css->rule_selectors->size; i++) {
-      css_free(list_at(css->rule_selectors, i));
-    }
-
-    list_free(css->rule_selectors);
-  }
-
-  free(css);
-}
-
 char *ast_to_string(CSSAST *ast) {
   switch (ast->type) {
   case CSS_AST_BINOP:

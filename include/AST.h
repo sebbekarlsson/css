@@ -31,8 +31,6 @@ typedef struct {
   double value_double;
 } CSSAST;
 
-typedef CSSAST CSS;
-
 CSSAST *init_css_ast(int type);
 
 char *ast_to_string(CSSAST *ast);
