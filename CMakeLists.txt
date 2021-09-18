@@ -20,7 +20,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(
   css
     PUBLIC
-      $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/css>
+      $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
       $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
       ${CMAKE_CURRENT_BINARY_DIR}/include
@@ -30,7 +30,7 @@ target_include_directories(
 target_include_directories(
   css_e
     PUBLIC
-      $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/css>
+      $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
       $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
       ${CMAKE_CURRENT_BINARY_DIR}/include

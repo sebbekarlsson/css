@@ -92,7 +92,7 @@ int css_get_value_int(CSSAST *ast, char *key) {
 
   CSSAST *val = css_get_value(ast, key);
   if (!val) return 0;
-  return val->value_int;
+  return val->value_int ? val->value_int : css_get_value_float(ast, key);
 }
 float css_get_value_float(CSSAST *ast, char *key) {
 
