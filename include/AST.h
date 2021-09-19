@@ -57,5 +57,6 @@ float css_get_value_float(CSSAST *ast, char *key);
 void css_free(CSSAST *css);
 
 CSSAST *css_get_rule(CSSAST *css, char *selector);
+float css_ast_get_float(CSSAST* ast);
 
 #endif

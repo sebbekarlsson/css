@@ -211,6 +211,8 @@ CSSToken *_css_lexer_next_token(CSSLexer *lexer) {
       return tok;
     }
 
+    css_lexer_skip_whitespace(lexer);
+
     switch (lexer->c) {
     case '\'':
     case '"':
@@ -269,7 +271,7 @@ CSSToken *_css_lexer_next_token(CSSLexer *lexer) {
       break;
     default: {
       if (lexer->c != '\0') {
-        printf("Lexer: Unexpected character `%c`\n", lexer->c);
+        printf("Lexer: Unexpected character `%c` (%d)\n", lexer->c, lexer->c);
         exit(1);
       }
     } break;

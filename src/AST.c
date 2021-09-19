@@ -61,3 +61,8 @@ char *css_ast_selector_to_string(CSSAST *ast) {
 
   return value ? value : strdup("");
 }
+
+float css_ast_get_float(CSSAST* ast) {
+  if (!ast) return 0.0f;
+  return ast->value_float ? ast->value_float : ast->value_double ? ast->value_double : ast->value_int;
+}
