@@ -6,6 +6,7 @@
 typedef struct {
   List *children;
   List *rule_selectors;
+  List *args;
 
   enum {
     CSS_AST_INT,
@@ -18,6 +19,11 @@ typedef struct {
     CSS_AST_SELECTOR,
     CSS_AST_DECL,
     CSS_AST_BINOP,
+    CSS_AST_STATEMENT,
+    CSS_AST_CALL,
+    CSS_AST_OPT,
+    CSS_AST_UNOP,
+    CSS_AST_ARRAY
   } type;
 
   void *left;

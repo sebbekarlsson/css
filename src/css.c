@@ -85,21 +85,26 @@ CSSAST *css_get_value(CSSAST *ast, char *key) {
 
 char *css_get_value_string(CSSAST *ast, char *key) {
   CSSAST *val = css_get_value(ast, key);
-  if (!val) return 0;
+  if (!val)
+    return 0;
   return val->value_str ? strdup(val->value_str) : 0;
 }
 int css_get_value_int(CSSAST *ast, char *key) {
 
   CSSAST *val = css_get_value(ast, key);
-  if (!val) return 0;
+  if (!val)
+    return 0;
   return val->value_int ? val->value_int : css_get_value_float(ast, key);
 }
 float css_get_value_float(CSSAST *ast, char *key) {
 
   CSSAST *val = css_get_value(ast, key);
-  if (!val) return 0;
+  if (!val)
+    return 0;
 
-  return val->value_float ? val->value_float : val->value_double ? (float)val->value_double : (float)val->value_int;
+  return val->value_float    ? val->value_float
+         : val->value_double ? (float)val->value_double
+                             : (float)val->value_int;
 }
 
 void css_free(CSSAST *css) {

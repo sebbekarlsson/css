@@ -17,4 +17,6 @@ void css_lexer_advance(CSSLexer *lexer);
 CSSToken *css_lexer_next_token(CSSLexer *lexer);
 
 void css_lexer_free(CSSLexer *lexer);
+
+char css_lexer_peek(CSSLexer *lexer, long int index);
 #endif

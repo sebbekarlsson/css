@@ -1,6 +1,6 @@
+#include <AST.h>
 #include <lexer.h>
 #include <parser.h>
-#include <AST.h>
 
 CSSAST *css(char *value);
 
