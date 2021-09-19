@@ -215,8 +215,8 @@ CSSAST *css_parser_parse_decl(CSSParser *parser) {
     css_parser_eat(parser, TOKEN_COLON);
   ast->right = css_parser_parse_term(parser);
 
-  while (parser->token->type == TOKEN_SEMI)
-    css_parser_eat(parser, parser->token->type);
+  //while (parser->token->type == TOKEN_SEMI)
+  //  css_parser_eat(parser, parser->token->type);
 
   if ((parser->token->type == TOKEN_ID || parser->token->type == TOKEN_FLOAT ||
        parser->token->type == TOKEN_STR || parser->token->type == TOKEN_INT) &&

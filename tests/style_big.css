@@ -852,7 +852,7 @@ option {
 }
 
 select:-internal-list-box optgroup option:before {
-    content: "\00a0\00a0\00a0\00a0";;
+    content: "\00a0\00a0\00a0\00a0";
 }
 
 select:-internal-list-box option,
