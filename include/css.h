@@ -3,6 +3,7 @@
 #include <parser.h>
 
 CSSAST *css(char *value);
+CSSAST *css_anon(char *value);
 
 void css_get_rules(CSSAST *ast, List *items);
 void css_get_declarations(CSSAST *ast, List *items);

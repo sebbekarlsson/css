@@ -36,7 +36,7 @@ void css_lexer_advance(CSSLexer *lexer) {
 
 void css_lexer_skip_whitespace(CSSLexer *lexer) {
   while ((lexer->c == ' ' || lexer->c == '\r' || lexer->c == '\n' ||
-          lexer->c == '\t') &&
+          lexer->c == '\t' || lexer->c == 27) &&
          !(LEXER_DONE(lexer))) {
     css_lexer_advance(lexer);
   }
@@ -193,6 +193,8 @@ CSSToken *_css_lexer_next_token(CSSLexer *lexer) {
       }
     }
 
+    css_lexer_skip_whitespace(lexer);
+
     if (isdigit(lexer->c) || lexer->c == '.')
       return css_lexer_parse_number(lexer);
     if ((isalnum(lexer->c) ||
@@ -276,6 +278,8 @@ CSSToken *_css_lexer_next_token(CSSLexer *lexer) {
       }
     } break;
     }
+
+    css_lexer_skip_whitespace(lexer);
   }
 
   return init_css_token(TOKEN_EOF, "\0");

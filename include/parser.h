@@ -24,4 +24,6 @@ void css_parser_parse_rule_body(CSSParser *parser, CSSAST *ast);
 
 void css_parser_free(CSSParser *parser);
 CSSAST *css_parser_parse_selector(CSSParser *parser);
+CSSAST *css_parser_parse_rule(CSSParser *parser);
+CSSAST *css_parser_parse_rule_anon(CSSParser *parser);
 #endif

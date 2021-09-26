@@ -12,6 +12,17 @@ CSSAST *css(char *value) {
   return root;
 }
 
+CSSAST *css_anon(char *value) {
+  CSSLexer *lexer = init_css_lexer(value);
+  CSSParser *parser = init_css_parser(lexer);
+  CSSAST *root = css_parser_parse_rule_anon(parser);
+
+  css_lexer_free(lexer);
+  css_parser_free(parser);
+
+  return root;
+}
+
 void css_get_rules(CSSAST *ast, List *items) {
 
   if (ast->type == CSS_AST_RULE) {
@@ -102,9 +113,9 @@ float css_get_value_float(CSSAST *ast, char *key) {
   if (!val)
     return 0;
 
-  return val->value_float    ? val->value_float
-         : val->value_double ? (float)val->value_double
-                             : (float)val->value_int;
+  return val->value_float ? val->value_float
+                          : val->value_double ? (float)val->value_double
+                                              : (float)val->value_int;
 }
 
 void css_free(CSSAST *css) {
