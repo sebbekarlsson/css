@@ -94,6 +94,47 @@ CSSAST *css_get_value(CSSAST *ast, char *key) {
   return value_ast;
 }
 
+void css_set_value_string(CSSAST* ast, char* key, char* value) {
+  if (ast == 0 || key == 0) return;
+
+  CSSAST *val = css_get_value(ast, key);
+  if (!val) {
+    if (ast->children == 0) ast->children = init_list(sizeof(CSSAST*));
+
+    val = init_css_ast(CSS_AST_BINOP);
+    CSSAST* left = init_css_ast(CSS_AST_ID);
+    left->value_str = strdup(key);
+    val->left = left;
+    CSSAST* right = init_css_ast(CSS_AST_STR);
+    right->value_str = value != 0 ? strdup(value) : 0;
+
+    list_append(ast->children, val);
+  } else {
+    if (val->value_str) free(val->value_str);
+    val->value_str = strdup(value);
+  }
+}
+void css_set_value_float(CSSAST* ast, char* key, float value) {
+  if (ast == 0 || key == 0) return;
+
+  CSSAST *val = css_get_value(ast, key);
+  if (!val) {
+    if (ast->children == 0) ast->children = init_list(sizeof(CSSAST*));
+
+    val = init_css_ast(CSS_AST_BINOP);
+    CSSAST* left = init_css_ast(CSS_AST_ID);
+    left->value_str = strdup(key);
+    val->left = left;
+    CSSAST* right = init_css_ast(CSS_AST_STR);
+    right->value_float = value;
+
+    list_append(ast->children, val);
+  } else {
+    val->value_float = value;
+  }
+}
+
+
 char *css_get_value_string(CSSAST *ast, char *key) {
   CSSAST *val = css_get_value(ast, key);
   if (!val)

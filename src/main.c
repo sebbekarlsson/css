@@ -17,11 +17,11 @@ int main(int argc, char *argv[]) {
   //  css_free(cssdata);
   //
 
-  CSSAST *cssdata = css_anon(css_read_file("tests/anon.css"));
+  CSSAST *cssdata = css(css_read_file("tests/style_big.css"));
 
-  // CSSAST *rule = css_get_rule(cssdata, "slot");
+  CSSAST *rule = css_get_rule(cssdata, "slot");
 
-  printf("%p\n", cssdata);
+  printf("%p\n", rule);
   css_free(cssdata);
 
   return 0;
