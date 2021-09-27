@@ -101,7 +101,7 @@ void css_set_value_string(CSSAST* ast, char* key, char* value) {
   if (!val) {
     if (ast->children == 0) ast->children = init_list(sizeof(CSSAST*));
 
-    val = init_css_ast(CSS_AST_BINOP);
+    val = init_css_ast(CSS_AST_DECL);
     CSSAST* left = init_css_ast(CSS_AST_ID);
     left->value_str = strdup(key);
     val->left = left;
@@ -121,7 +121,7 @@ void css_set_value_float(CSSAST* ast, char* key, float value) {
   if (!val) {
     if (ast->children == 0) ast->children = init_list(sizeof(CSSAST*));
 
-    val = init_css_ast(CSS_AST_BINOP);
+    val = init_css_ast(CSS_AST_DECL);
     CSSAST* left = init_css_ast(CSS_AST_ID);
     left->value_str = strdup(key);
     val->left = left;
