@@ -128,11 +128,38 @@ void css_set_value_float(CSSAST* ast, char* key, float value) {
     CSSAST* right = init_css_ast(CSS_AST_STR);
     right->value_float = value;
     val->value_double = (double)value;
+    val->value_float = (float)value;
+    val->value_int = (int)value;
 
     list_append(ast->children, val);
   } else {
     val->value_float = value;
     val->value_double = (double)value;
+    val->value_int = (int)value;
+  }
+}
+
+void css_set_value_int(CSSAST* ast, char* key, float value) {
+  if (ast == 0 || key == 0) return;
+
+  CSSAST *val = css_get_value(ast, key);
+  if (!val) {
+    if (ast->children == 0) ast->children = init_list(sizeof(CSSAST*));
+
+    val = init_css_ast(CSS_AST_BINOP);
+    CSSAST* left = init_css_ast(CSS_AST_ID);
+    left->value_str = strdup(key);
+    val->left = left;
+    CSSAST* right = init_css_ast(CSS_AST_STR);
+    val->value_double = (double)value;
+    val->value_float = (float)value;
+    val->value_int = (int)value;
+
+    list_append(ast->children, val);
+  } else {
+    val->value_float = (float)value;
+    val->value_double = (double)value;
+    val->value_int = (int)value;
   }
 }
 
