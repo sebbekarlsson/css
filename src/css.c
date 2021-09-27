@@ -107,6 +107,7 @@ void css_set_value_string(CSSAST* ast, char* key, char* value) {
     val->left = left;
     CSSAST* right = init_css_ast(CSS_AST_STR);
     right->value_str = value != 0 ? strdup(value) : 0;
+    val->right = right;
 
     list_append(ast->children, val);
   } else {
@@ -127,9 +128,10 @@ void css_set_value_float(CSSAST* ast, char* key, float value) {
     val->left = left;
     CSSAST* right = init_css_ast(CSS_AST_STR);
     right->value_float = value;
-    val->value_double = (double)value;
-    val->value_float = (float)value;
-    val->value_int = (int)value;
+    right->value_double = (double)value;
+    right->value_float = (float)value;
+    right->value_int = (int)value;
+    val->right = right;
 
     list_append(ast->children, val);
   } else {
@@ -150,10 +152,11 @@ void css_set_value_int(CSSAST* ast, char* key, float value) {
     CSSAST* left = init_css_ast(CSS_AST_ID);
     left->value_str = strdup(key);
     val->left = left;
-    CSSAST* right = init_css_ast(CSS_AST_STR);
-    val->value_double = (double)value;
-    val->value_float = (float)value;
-    val->value_int = (int)value;
+    CSSAST* right = init_css_ast(CSS_AST_INT);
+    right->value_double = (double)value;
+    right->value_float = (float)value;
+    right->value_int = (int)value;
+    val->right = right;
 
     list_append(ast->children, val);
   } else {
