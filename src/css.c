@@ -127,10 +127,12 @@ void css_set_value_float(CSSAST* ast, char* key, float value) {
     val->left = left;
     CSSAST* right = init_css_ast(CSS_AST_STR);
     right->value_float = value;
+    val->value_double = (double)value;
 
     list_append(ast->children, val);
   } else {
     val->value_float = value;
+    val->value_double = (double)value;
   }
 }
 
