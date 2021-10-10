@@ -1,5 +1,7 @@
 #include <css.h>
 #include <string.h>
+#include <crayola.h>
+#include <sys/param.h>
 
 CSSAST *css(char *value) {
   CSSLexer *lexer = init_css_lexer(value);
@@ -222,4 +224,17 @@ void css_free(CSSAST *css) {
   }
 
   free(css);
+}
+
+
+const char* css_crayola_to_hex(char* name) {
+  for (uint32_t i = 0; i < (uint32_t) CRAYOLA_LENGTH; i+=2) {
+    const char* k = CRAYOLA[(int)MIN(CRAYOLA_LENGTH-1, i)];
+    const char* v = CRAYOLA[(int)MIN(CRAYOLA_LENGTH-1, i+1)];
+    if (strcmp(k, name) == 0) {
+      return v;
+    }
+  }
+
+  return 0;
 }

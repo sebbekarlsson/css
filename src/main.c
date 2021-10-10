@@ -16,8 +16,13 @@ int main(int argc, char *argv[]) {
 
   //  css_free(cssdata);
   //
+  const char* hexcolor = css_crayola_to_hex("green");
+  if (hexcolor) {
+    printf("%s\n", hexcolor);
+  }
+  return 0;
 
-  CSSAST *cssdata = css(css_read_file("tests/style_big.css"));
+  CSSAST *cssdata = css(css_read_file("tests/hello.css"));
 
   CSSAST *rule = css_get_rule(cssdata, "slot");
 

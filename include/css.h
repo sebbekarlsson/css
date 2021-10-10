@@ -16,6 +16,8 @@ void css_set_value_string(CSSAST* ast, char* key, char* value);
 void css_set_value_int(CSSAST* ast, char* key, float value);
 void css_set_value_float(CSSAST* ast, char* key, float value);
 
+const char* css_crayola_to_hex(char* name);
+
 
 int css_get_value_int(CSSAST *ast, char *key);
 float css_get_value_float(CSSAST *ast, char *key);
