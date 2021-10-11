@@ -16,15 +16,21 @@ int main(int argc, char *argv[]) {
 
   //  css_free(cssdata);
   //
-  const char* hexcolor = css_crayola_to_hex("green");
-  if (hexcolor) {
-    printf("%s\n", hexcolor);
-  }
-  return 0;
+  // const char* hexcolor = css_crayola_to_hex("green");
+  // if (hexcolor) {
+  //  printf("%s\n", hexcolor);
+  //}
+  // return 0;
 
-  CSSAST *cssdata = css(css_read_file("tests/hello.css"));
+  CSSAST *cssdata = css(css_read_file("tests/style_big.css"));
 
   CSSAST *rule = css_get_rule(cssdata, "slot");
+
+  char *s = css_get_value_string(rule, "display");
+
+  if (s) {
+    printf("%s\n", s);
+  }
 
   printf("%p\n", rule);
   css_free(cssdata);

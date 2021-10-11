@@ -10,6 +10,7 @@ CSSAST *init_css_ast(int type) {
   CSSAST *ast = NEW(CSSAST);
   ast->type = type;
   ast->children = 0;
+  ast->keyvalue = NEW_MAP();
 
   return ast;
 }

@@ -36,3 +36,16 @@ target_include_directories(
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
       ${CMAKE_CURRENT_BINARY_DIR}/include
       ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+
+include(FetchContent)
+FetchContent_Declare(
+  hashmap
+  URL /home/ianertson/workspace/hashmap
+  # GIT_REPOSITORY https://github.com/sebbekarlsson/hashmap.git
+  # GIT_TAG master
+)
+FetchContent_MakeAvailable(hashmap)
+
+target_link_libraries(css hashmap)
+target_link_libraries(css_e hashmap)

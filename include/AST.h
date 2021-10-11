@@ -2,8 +2,10 @@
 #define XCSS_AST_H
 #include <list.h>
 #include <token.h>
+#include <hashmap/map.h>
 
-typedef struct {
+
+typedef struct CSS_AST_STRUCT {
   List *children;
   List *rule_selectors;
   List *args;
@@ -26,8 +28,8 @@ typedef struct {
     CSS_AST_ARRAY
   } type;
 
-  void *left;
-  void *right;
+  struct CSS_AST_STRUCT *left;
+  struct CSS_AST_STRUCT *right;
   CSSToken *token;
   char *unit;
 
@@ -35,6 +37,7 @@ typedef struct {
   char *value_str;
   float value_float;
   double value_double;
+  map_T* keyvalue;
 } CSSAST;
 
 CSSAST *init_css_ast(int type);

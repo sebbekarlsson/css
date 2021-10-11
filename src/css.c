@@ -1,6 +1,6 @@
+#include <crayola.h>
 #include <css.h>
 #include <string.h>
-#include <crayola.h>
 #include <sys/param.h>
 
 CSSAST *css(char *value) {
@@ -76,6 +76,10 @@ CSSAST *css_get_rule(CSSAST *css, char *selector) {
 }
 
 CSSAST *css_get_value(CSSAST *ast, char *key) {
+  map_bucket_T *bucket = map_get(ast->keyvalue, key);
+  if (bucket != 0) {
+    return bucket->value;
+  }
   CSSAST *value_ast = 0;
   List *declarations = init_list(sizeof(CSSAST *));
   css_get_declarations(ast, declarations);
@@ -96,39 +100,45 @@ CSSAST *css_get_value(CSSAST *ast, char *key) {
   return value_ast;
 }
 
-void css_set_value_string(CSSAST* ast, char* key, char* value) {
-  if (ast == 0 || key == 0) return;
+void css_set_value_string(CSSAST *ast, char *key, char *value) {
+  if (ast == 0 || key == 0)
+    return;
 
   CSSAST *val = css_get_value(ast, key);
   if (!val) {
-    if (ast->children == 0) ast->children = init_list(sizeof(CSSAST*));
+    if (ast->children == 0)
+      ast->children = init_list(sizeof(CSSAST *));
 
     val = init_css_ast(CSS_AST_DECL);
-    CSSAST* left = init_css_ast(CSS_AST_ID);
+    CSSAST *left = init_css_ast(CSS_AST_ID);
     left->value_str = strdup(key);
     val->left = left;
-    CSSAST* right = init_css_ast(CSS_AST_STR);
+    CSSAST *right = init_css_ast(CSS_AST_STR);
     right->value_str = value != 0 ? strdup(value) : 0;
     val->right = right;
 
     list_append(ast->children, val);
+    map_set(ast->keyvalue, key, val);
   } else {
-    if (val->value_str) free(val->value_str);
+    if (val->value_str)
+      free(val->value_str);
     val->value_str = strdup(value);
   }
 }
-void css_set_value_float(CSSAST* ast, char* key, float value) {
-  if (ast == 0 || key == 0) return;
+void css_set_value_float(CSSAST *ast, char *key, float value) {
+  if (ast == 0 || key == 0)
+    return;
 
   CSSAST *val = css_get_value(ast, key);
   if (!val) {
-    if (ast->children == 0) ast->children = init_list(sizeof(CSSAST*));
+    if (ast->children == 0)
+      ast->children = init_list(sizeof(CSSAST *));
 
     val = init_css_ast(CSS_AST_DECL);
-    CSSAST* left = init_css_ast(CSS_AST_ID);
+    CSSAST *left = init_css_ast(CSS_AST_ID);
     left->value_str = strdup(key);
     val->left = left;
-    CSSAST* right = init_css_ast(CSS_AST_STR);
+    CSSAST *right = init_css_ast(CSS_AST_STR);
     right->value_float = value;
     right->value_double = (double)value;
     right->value_float = (float)value;
@@ -136,6 +146,7 @@ void css_set_value_float(CSSAST* ast, char* key, float value) {
     val->right = right;
 
     list_append(ast->children, val);
+    map_set(ast->keyvalue, key, val);
   } else {
     val->value_float = value;
     val->value_double = (double)value;
@@ -143,31 +154,33 @@ void css_set_value_float(CSSAST* ast, char* key, float value) {
   }
 }
 
-void css_set_value_int(CSSAST* ast, char* key, float value) {
-  if (ast == 0 || key == 0) return;
+void css_set_value_int(CSSAST *ast, char *key, float value) {
+  if (ast == 0 || key == 0)
+    return;
 
   CSSAST *val = css_get_value(ast, key);
   if (!val) {
-    if (ast->children == 0) ast->children = init_list(sizeof(CSSAST*));
+    if (ast->children == 0)
+      ast->children = init_list(sizeof(CSSAST *));
 
     val = init_css_ast(CSS_AST_BINOP);
-    CSSAST* left = init_css_ast(CSS_AST_ID);
+    CSSAST *left = init_css_ast(CSS_AST_ID);
     left->value_str = strdup(key);
     val->left = left;
-    CSSAST* right = init_css_ast(CSS_AST_INT);
+    CSSAST *right = init_css_ast(CSS_AST_INT);
     right->value_double = (double)value;
     right->value_float = (float)value;
     right->value_int = (int)value;
     val->right = right;
 
     list_append(ast->children, val);
+    map_set(ast->keyvalue, key, val);
   } else {
     val->value_float = (float)value;
     val->value_double = (double)value;
     val->value_int = (int)value;
   }
 }
-
 
 char *css_get_value_string(CSSAST *ast, char *key) {
   CSSAST *val = css_get_value(ast, key);
@@ -223,14 +236,17 @@ void css_free(CSSAST *css) {
     list_free(css->rule_selectors);
   }
 
+  if (css->keyvalue != 0) {
+    map_free(css->keyvalue);
+  }
+
   free(css);
 }
 
-
-const char* css_crayola_to_hex(char* name) {
-  for (uint32_t i = 0; i < (uint32_t) CRAYOLA_LENGTH; i+=2) {
-    const char* k = CRAYOLA[(int)MIN(CRAYOLA_LENGTH-1, i)];
-    const char* v = CRAYOLA[(int)MIN(CRAYOLA_LENGTH-1, i+1)];
+const char *css_crayola_to_hex(char *name) {
+  for (uint32_t i = 0; i < (uint32_t)CRAYOLA_LENGTH; i += 2) {
+    const char *k = CRAYOLA[(int)MIN(CRAYOLA_LENGTH - 1, i)];
+    const char *v = CRAYOLA[(int)MIN(CRAYOLA_LENGTH - 1, i + 1)];
     if (strcmp(k, name) == 0) {
       return v;
     }

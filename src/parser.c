@@ -264,7 +264,12 @@ void css_parser_parse_rule_body(CSSParser *parser, CSSAST *ast) {
   }
 
   if (parser->token->type != TOKEN_RBRACE) {
-    list_append(ast->children, css_parser_parse_decl(parser));
+    CSSAST *decl = css_parser_parse_decl(parser);
+
+    if (decl && decl->left && decl->left->value_str && decl->right)
+      map_set(ast->keyvalue, decl->left->value_str, decl->right);
+
+    list_append(ast->children, decl);
   }
 
   while (parser->token->type == TOKEN_SEMI) {
@@ -274,7 +279,12 @@ void css_parser_parse_rule_body(CSSParser *parser, CSSAST *ast) {
       break;
 
     if (parser->token->type != TOKEN_RBRACE) {
-      list_append(ast->children, css_parser_parse_decl(parser));
+      CSSAST *decl = css_parser_parse_decl(parser);
+
+      if (decl && decl->left && decl->left->value_str && decl->right)
+        map_set(ast->keyvalue, decl->left->value_str, decl->right);
+
+      list_append(ast->children, decl);
     }
   }
 }
