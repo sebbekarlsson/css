@@ -12,9 +12,12 @@ file(GLOB css_sources ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c)
 add_executable(css_e ${css_sources})
 
 
+
 list(FILTER css_ources EXCLUDE REGEX "main.c")
 
 add_library(css SHARED ${css_sources})
+
+target_compile_options(css PRIVATE -fPIC)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
