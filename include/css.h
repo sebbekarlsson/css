@@ -1,3 +1,6 @@
+#ifndef XCSS_L_H
+#define XCSS_L_H
+
 #include <AST.h>
 #include <lexer.h>
 #include <parser.h>
@@ -25,3 +28,4 @@ float css_get_value_float(CSSAST *ast, char *key);
 void css_free(CSSAST *css);
 
 CSSAST *css_get_rule(CSSAST *css, char *selector);
+#endif
