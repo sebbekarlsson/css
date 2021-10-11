@@ -14,7 +14,7 @@ add_executable(css_e ${css_sources})
 
 list(FILTER css_ources EXCLUDE REGEX "main.c")
 
-add_library(css ${css_sources})
+add_library(css SHARED ${css_sources})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
