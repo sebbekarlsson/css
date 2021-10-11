@@ -47,5 +47,5 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(hashmap)
 
-target_link_libraries(css hashmap)
-target_link_libraries(css_e hashmap)
+target_link_libraries(css PUBLIC hashmap)
+target_link_libraries(css_e PUBLIC hashmap)
