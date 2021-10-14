@@ -87,6 +87,8 @@ char *ast_to_string(CSSAST *ast) {
   case CSS_AST_STR:
     return ast_string_to_string(ast);
     break;
+    case CSS_AST_RULE:
+      return css_ast_selector_to_string(ast); break;
   default: {
     return ast->value_str ? strdup(ast->value_str) : strdup("");
   } break;

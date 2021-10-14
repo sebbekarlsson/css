@@ -58,7 +58,7 @@ CSSAST *css_get_rule(CSSAST *css, char *selector) {
       CSSAST *child = list_at(css->children, i);
       if (child->type != CSS_AST_RULE)
         continue;
-      char *selectorstr = css_ast_selector_to_string(child);
+      char *selectorstr = ast_to_string(child);
       if (!selectorstr)
         continue;
 

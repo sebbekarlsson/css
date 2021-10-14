@@ -25,9 +25,10 @@ int main(int argc, char *argv[]) {
   char *g = css_read_file(argv[1]);
   CSSAST *cssdata = css(g);
 
-  CSSAST *rule = css_get_rule(cssdata, "input[type=\"text\"]");
+  CSSAST *rule = css_get_rule(cssdata, ".rangeProgress");
 
   if (rule) {
+    printf("yes\n");
     char *s = css_get_value_string(rule, "color");
 
     if (s) {

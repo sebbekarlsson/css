@@ -48,7 +48,7 @@ CSSToken *css_lexer_parse_id(CSSLexer *lexer) {
   while ((isalnum(lexer->c) ||
           ((lexer->c == '-' && !isdigit(css_lexer_peek(lexer, 1) &&
                                         css_lexer_peek(lexer, 1) != ' '))) ||
-          lexer->c == '!' || lexer->c == '_') &&
+          lexer->c == '!' || lexer->c == '_' || lexer->c == '.') &&
          !LEXER_DONE(lexer)) {
     STR_APPEND_CHAR(value, lexer->c);
     css_lexer_advance(lexer);
@@ -191,6 +191,10 @@ CSSToken *_css_lexer_next_token(CSSLexer *lexer) {
         css_lexer_skip_whitespace(lexer);
         continue;
       }
+    }
+
+    if (lexer->c == '.' && isalnum(css_lexer_peek(lexer, 1))) {
+      return css_lexer_parse_id(lexer);
     }
 
     css_lexer_skip_whitespace(lexer);
