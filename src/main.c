@@ -22,17 +22,21 @@ int main(int argc, char *argv[]) {
   //}
   // return 0;
 
-  CSSAST *cssdata = css(css_read_file("tests/style_big.css"));
+  char *g = css_read_file(argv[1]);
+  CSSAST *cssdata = css(g);
 
-  CSSAST *rule = css_get_rule(cssdata, "slot");
+  CSSAST *rule = css_get_rule(cssdata, "input[type=\"text\"]");
 
-  char *s = css_get_value_string(rule, "display");
+  if (rule) {
+    char *s = css_get_value_string(rule, "color");
 
-  if (s) {
-    printf("%s\n", s);
+    if (s) {
+      printf("%s\n", s);
+    }
+
+    printf("%p\n", rule);
   }
 
-  printf("%p\n", rule);
   css_free(cssdata);
 
   return 0;

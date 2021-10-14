@@ -202,17 +202,17 @@ CSSAST *css_parser_parse_factor(CSSParser *parser) {
   }
 
   while (left && parser->token->type == TOKEN_LBRACKET) {
-    CSSAST *acall = init_css_ast(CSS_AST_CALL);
+    CSSAST *acall = init_css_ast(CSS_AST_ARRAY);
     acall->left = left;
-    acall->args = init_list(sizeof(CSSAST *));
+    acall->children = init_list(sizeof(CSSAST *));
     css_parser_eat(parser, TOKEN_LBRACKET);
 
     if (parser->token->type != TOKEN_RBRACKET) {
-      list_append(acall->args, css_parser_parse_term(parser));
+      list_append(acall->children, css_parser_parse_term(parser));
 
       while (parser->token->type != TOKEN_RBRACKET &&
              parser->token->type != TOKEN_RBRACE) {
-        list_append(acall->args, css_parser_parse_term(parser));
+        list_append(acall->children, css_parser_parse_term(parser));
       }
     }
     css_parser_eat(parser, TOKEN_RBRACKET);

@@ -1,9 +1,8 @@
 #ifndef XCSS_AST_H
 #define XCSS_AST_H
+#include <hashmap/map.h>
 #include <list.h>
 #include <token.h>
-#include <hashmap/map.h>
-
 
 typedef struct CSS_AST_STRUCT {
   List *children;
@@ -37,7 +36,7 @@ typedef struct CSS_AST_STRUCT {
   char *value_str;
   float value_float;
   double value_double;
-  map_T* keyvalue;
+  map_T *keyvalue;
 } CSSAST;
 
 CSSAST *init_css_ast(int type);

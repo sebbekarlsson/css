@@ -2,6 +2,7 @@
 #include <list.h>
 #include <mem.h>
 #include <parser.h>
+#include <stdio.h>
 #include <string.h>
 #include <token.h>
 #include <utils.h>
@@ -15,10 +16,76 @@ CSSAST *init_css_ast(int type) {
   return ast;
 }
 
+char *ast_array_to_string(CSSAST *ast) {
+  char *str = 0;
+
+  if (ast->left) {
+    char *leftstr = ast_to_string(ast->left);
+    if (leftstr) {
+      str_append(&str, leftstr);
+      free(leftstr);
+    }
+  }
+
+  str_append(&str, "[");
+  if (ast->children && ast->children->size) {
+    for (uint32_t i = 0; i < ast->children->size; i++) {
+      CSSAST *child = (CSSAST *)ast->children->items[i];
+      char *childstr = ast_to_string(child);
+
+      if (childstr) {
+        str_append(&str, childstr);
+        free(childstr);
+      }
+    }
+  }
+  str_append(&str, "]");
+
+  return str;
+}
+
+char *ast_call_to_string(CSSAST *ast) {
+  char *str = 0;
+  if (ast->args && ast->args->size) {
+    for (uint32_t i = 0; i < ast->args->size; i++) {
+      CSSAST *child = (CSSAST *)ast->args->items[i];
+      char *childstr = ast_to_string(child);
+
+      if (childstr) {
+        str_append(&str, childstr);
+        free(childstr);
+      }
+    }
+  }
+
+  return str ? str : strdup("");
+}
+
+char *ast_string_to_string(CSSAST *ast) {
+  char *str = strdup("\"");
+  char *value = ast->value_str;
+  if (value) {
+    str_append(&str, value);
+  }
+  str_append(&str, "\"");
+
+  return str;
+}
+
 char *ast_to_string(CSSAST *ast) {
   switch (ast->type) {
   case CSS_AST_BINOP:
     return ast_binop_to_string(ast);
+    break;
+  case CSS_AST_ARRAY:
+    return ast_array_to_string(ast);
+    break;
+  case CSS_AST_CALL:
+    return ast_call_to_string(ast);
+    break;
+
+  case CSS_AST_STR:
+    return ast_string_to_string(ast);
     break;
   default: {
     return ast->value_str ? strdup(ast->value_str) : strdup("");

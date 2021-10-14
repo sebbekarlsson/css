@@ -16,13 +16,25 @@ add_executable(css_e ${css_sources})
 list(FILTER css_ources EXCLUDE REGEX "main.c")
 
 add_library(css SHARED ${css_sources})
+add_library(css_static STATIC ${css_sources})
 
 target_compile_options(css PUBLIC -fPIC)
+target_compile_options(css_static PUBLIC -fPIC)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_include_directories(
   css
+    PUBLIC
+      $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      ${CMAKE_CURRENT_BINARY_DIR}/include
+      ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+
+target_include_directories(
+  css_static
     PUBLIC
       $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
       $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
@@ -43,12 +55,13 @@ target_include_directories(
 
 include(FetchContent)
 FetchContent_Declare(
-  hashmap
+  hashmap_static
   URL /home/ianertson/workspace/hashmap
   # GIT_REPOSITORY https://github.com/sebbekarlsson/hashmap.git
   # GIT_TAG master
 )
-FetchContent_MakeAvailable(hashmap)
+FetchContent_MakeAvailable(hashmap_static)
 
-target_link_libraries(css PUBLIC hashmap)
-target_link_libraries(css_e PUBLIC hashmap)
+target_link_libraries(css PUBLIC hashmap_static)
+target_link_libraries(css_e PUBLIC hashmap_static)
+target_link_libraries(css_static PUBLIC hashmap_static)
