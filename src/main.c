@@ -25,14 +25,13 @@ int main(int argc, char *argv[]) {
   char *g = css_read_file(argv[1]);
   CSSAST *cssdata = css(g);
 
-  CSSAST *rule = css_get_rule(cssdata, ".rangeProgress");
+  CSSAST *rule = css_get_rule(cssdata, "div");
 
   if (rule) {
-    printf("yes\n");
-    char *s = css_get_value_string(rule, "color");
+    float s = css_get_value_float(rule, "left");
 
     if (s) {
-      printf("%s\n", s);
+      printf("%12.6f\n", s);
     }
 
     printf("%p\n", rule);

@@ -105,6 +105,11 @@ CSSToken *css_lexer_parse_string(CSSLexer *lexer) {
 CSSToken *css_lexer_parse_number(CSSLexer *lexer) {
   char *value = 0;
 
+  if (lexer->c == '-') {
+    STR_APPEND_CHAR(value, lexer->c);
+    css_lexer_advance(lexer);
+  }
+
   int type = lexer->c == '.' ? TOKEN_FLOAT : TOKEN_INT;
 
   if (lexer->c == '.') {
@@ -112,6 +117,7 @@ CSSToken *css_lexer_parse_number(CSSLexer *lexer) {
     STR_APPEND_CHAR(value, lexer->c);
     css_lexer_advance(lexer);
   }
+
 
   while ((isdigit(lexer->c)) && !LEXER_DONE(lexer)) {
     STR_APPEND_CHAR(value, lexer->c);
@@ -199,7 +205,7 @@ CSSToken *_css_lexer_next_token(CSSLexer *lexer) {
 
     css_lexer_skip_whitespace(lexer);
 
-    if (isdigit(lexer->c) || lexer->c == '.')
+    if (isdigit(lexer->c) || lexer->c == '.' || (lexer->c == '-' && isdigit(css_lexer_peek(lexer, 1))))
       return css_lexer_parse_number(lexer);
     if ((isalnum(lexer->c) ||
          (lexer->c == '-' && css_lexer_peek(lexer, 1) != ' ' &&
