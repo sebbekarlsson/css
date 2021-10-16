@@ -1,5 +1,8 @@
 #ifndef XCSS_L_H
 #define XCSS_L_H
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <AST.h>
 #include <lexer.h>
@@ -27,4 +30,7 @@ float css_get_value_float(CSSAST *ast, char *key);
 void css_free(CSSAST *css);
 
 CSSAST *css_get_rule(CSSAST *css, char *selector);
+#ifdef __cplusplus
+}
+#endif
 #endif
