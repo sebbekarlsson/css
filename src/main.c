@@ -1,6 +1,7 @@
 #include <css.h>
 #include <io.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 int main(int argc, char *argv[]) {
   /*CSSAST *cssdata = css("{"
@@ -25,7 +26,9 @@ int main(int argc, char *argv[]) {
   char *g = css_read_file(argv[1]);
   CSSAST *cssdata = css(g);
 
-  CSSAST *rule = css_get_rule(cssdata, "div");
+  CSSAST* copied = css_copy(cssdata);
+
+  CSSAST *rule = css_get_rule(copied, "div");
 
   if (rule) {
     float s = css_get_value_float(rule, "left");
@@ -38,6 +41,8 @@ int main(int argc, char *argv[]) {
   }
 
   css_free(cssdata);
+  css_free(copied);
+  free(g);
 
   return 0;
 }

@@ -2,6 +2,7 @@
 #include <css.h>
 #include <string.h>
 #include <sys/param.h>
+#include <token.h>
 
 CSSAST *css(char *value) {
   CSSLexer *lexer = init_css_lexer(value);
@@ -242,6 +243,57 @@ void css_free(CSSAST *css) {
 
   free(css);
 }
+
+
+static List* css_copy_list(List* inlist) {
+  if (!inlist || (inlist && inlist->size == 0)) return 0;
+  List* newlist = init_list(inlist->item_size);
+
+  for (uint32_t i = 0; i < inlist->size; i++) {
+    CSSAST* child = inlist->items[i];
+    if (child == 0) continue;
+
+    list_append(newlist, css_copy(child));
+  }
+
+  return newlist;
+}
+
+CSSAST* css_copy(CSSAST* css) {
+  if (css == 0) return 0;
+  CSSAST* ast = init_css_ast(css->type);
+  if (css->value_str) ast->value_str = strdup(css->value_str);
+  ast->value_double = css->value_double;
+  ast->value_float = css->value_float;
+  ast->value_int = css->value_int;
+  ast->args = css_copy_list(css->args);
+  ast->children = css_copy_list(css->children);
+  ast->rule_selectors = css_copy_list(css->rule_selectors);
+  ast->left = css_copy(css->left);
+  ast->right = css_copy(css->right);
+  ast->token = css_token_clone(css->token);
+  css_reindex(ast);
+  return ast;
+}
+
+void css_reindex(CSSAST* css) {
+  List *declarations = init_list(sizeof(CSSAST *));
+  css_get_declarations(css, declarations);
+
+  for (int i = 0; i < declarations->size; i++) {
+    CSSAST *decl = list_at(declarations, i);
+    if (!decl->left)
+      continue;
+    CSSAST *left = decl->left;
+    if (!left->value_str)
+      continue;
+
+    map_set(css->keyvalue, left->value_str, decl->right);
+  }
+
+  list_free(declarations);
+}
+
 
 const char *css_crayola_to_hex(char *name) {
   for (uint32_t i = 0; i < (uint32_t)CRAYOLA_LENGTH; i += 2) {

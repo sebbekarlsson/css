@@ -18,5 +18,6 @@ void css_token_free(CSSToken *token) {
 }
 
 CSSToken *css_token_clone(CSSToken *token) {
+  if (token == 0) return 0;
   return init_css_token(token->type, token->value);
 }

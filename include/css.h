@@ -29,7 +29,12 @@ float css_get_value_float(CSSAST *ast, char *key);
 
 void css_free(CSSAST *css);
 
-CSSAST *css_get_rule(CSSAST *css, char *selector);
+  CSSAST *css_get_rule(CSSAST *css, char *selector);
+
+  CSSAST* css_copy(CSSAST* css);
+
+  void css_reindex(CSSAST* css);
+
 #ifdef __cplusplus
 }
 #endif
