@@ -28,16 +28,12 @@ int main(int argc, char *argv[]) {
 
   CSSAST* copied = css_copy(cssdata);
 
-  CSSAST *rule = css_get_rule(copied, "div");
+  CSSAST *rule = css_get_rule(copied, "input");
 
   if (rule) {
-    float s = css_get_value_float(rule, "left");
+    CSSColor color = css_get_value_color(rule, "background-color");
 
-    if (s) {
-      printf("%12.6f\n", s);
-    }
-
-    printf("%p\n", rule);
+    printf("%1.2f %1.2f %1.2f %1.2f\n", color.r, color.g, color.b, color.a);
   }
 
   css_free(cssdata);

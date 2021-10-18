@@ -1,5 +1,6 @@
 #include <crayola.h>
 #include <css.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/param.h>
 #include <token.h>
@@ -244,14 +245,15 @@ void css_free(CSSAST *css) {
   free(css);
 }
 
-
-static List* css_copy_list(List* inlist) {
-  if (!inlist || (inlist && inlist->size == 0)) return 0;
-  List* newlist = init_list(inlist->item_size);
+static List *css_copy_list(List *inlist) {
+  if (!inlist || (inlist && inlist->size == 0))
+    return 0;
+  List *newlist = init_list(inlist->item_size);
 
   for (uint32_t i = 0; i < inlist->size; i++) {
-    CSSAST* child = inlist->items[i];
-    if (child == 0) continue;
+    CSSAST *child = inlist->items[i];
+    if (child == 0)
+      continue;
 
     list_append(newlist, css_copy(child));
   }
@@ -259,10 +261,12 @@ static List* css_copy_list(List* inlist) {
   return newlist;
 }
 
-CSSAST* css_copy(CSSAST* css) {
-  if (css == 0) return 0;
-  CSSAST* ast = init_css_ast(css->type);
-  if (css->value_str) ast->value_str = strdup(css->value_str);
+CSSAST *css_copy(CSSAST *css) {
+  if (css == 0)
+    return 0;
+  CSSAST *ast = init_css_ast(css->type);
+  if (css->value_str)
+    ast->value_str = strdup(css->value_str);
   ast->value_double = css->value_double;
   ast->value_float = css->value_float;
   ast->value_int = css->value_int;
@@ -276,7 +280,7 @@ CSSAST* css_copy(CSSAST* css) {
   return ast;
 }
 
-void css_reindex(CSSAST* css) {
+void css_reindex(CSSAST *css) {
   List *declarations = init_list(sizeof(CSSAST *));
   css_get_declarations(css, declarations);
 
@@ -294,7 +298,6 @@ void css_reindex(CSSAST* css) {
   list_free(declarations);
 }
 
-
 const char *css_crayola_to_hex(char *name) {
   for (uint32_t i = 0; i < (uint32_t)CRAYOLA_LENGTH; i += 2) {
     const char *k = CRAYOLA[(int)MIN(CRAYOLA_LENGTH - 1, i)];
@@ -305,4 +308,106 @@ const char *css_crayola_to_hex(char *name) {
   }
 
   return 0;
+}
+
+ECSSDisplay css_to_display(char *value) {
+  if (value == 0)
+    return CSS_DISPLAY_AUTO;
+  if (strcmp(value, "auto") == 0)
+    return CSS_DISPLAY_AUTO;
+  if (strcmp(value, "block") == 0)
+    return CSS_DISPLAY_BLOCK;
+  if (strcmp(value, "inline-block") == 0)
+    return CSS_DISPLAY_INLINE_BLOCK;
+  if (strcmp(value, "table-cell") == 0)
+    return CSS_DISPLAY_TABLE_CELL;
+  if (strcmp(value, "flex") == 0)
+    return CSS_DISPLAY_FLEX;
+  if (strcmp(value, "grid") == 0)
+    return CSS_DISPLAY_GRID;
+  return CSS_DISPLAY_AUTO;
+}
+
+ECSSFlexDirection css_to_flex_direction(char *value) {
+  if (value == 0)
+    return CSS_FLEX_DIRECTION_ROW;
+  if (strcmp(value, "row") == 0)
+    return CSS_FLEX_DIRECTION_ROW;
+  if (strcmp(value, "column") == 0)
+    return CSS_FLEX_DIRECTION_COLUMN;
+  return CSS_FLEX_DIRECTION_ROW;
+}
+
+ECSSFlexAlign css_to_flex_align(char *value) {
+  if (value == 0)
+    return CSS_FLEX_ALIGN_BEGIN;
+  if (strcmp(value, "flex-begin") == 0)
+    return CSS_FLEX_ALIGN_BEGIN;
+  if (strcmp(value, "flex-end") == 0)
+    return CSS_FLEX_ALIGN_END;
+  if (strcmp(value, "flex-center") == 0)
+    return CSS_FLEX_ALIGN_CENTER;
+  return CSS_FLEX_ALIGN_BEGIN;
+}
+
+ECSSPosition css_to_position(char *value) {
+  if (value == 0)
+    return CSS_POSITION_AUTO;
+  if (strcmp(value, "auto") == 0)
+    return CSS_POSITION_AUTO;
+  if (strcmp(value, "absolute") == 0)
+    return CSS_POSITION_ABSOLUTE;
+  if (strcmp(value, "relative") == 0)
+    return CSS_POSITION_RELATIVE;
+  return CSS_POSITION_AUTO;
+}
+
+static const char *ensure_hex(char *value) {
+  const char *v = (const char *)value;
+  if (v == 0)
+    return 0;
+  if (strchr(v, '#') == 0)
+    v = css_crayola_to_hex(value);
+  return v;
+}
+
+CSSColor css_hex_to_color(char *value) {
+  const char *v = ensure_hex(value);
+  if (v == 0)
+    return (CSSColor){-1, -1, -1, -1};
+  if (v[0] == '#')
+    v++;
+  unsigned int hexvalue = strtol(v, 0, 16);
+  return (CSSColor){((hexvalue >> 16) & 0xFF), ((hexvalue >> 8) & 0xFF),
+                    ((hexvalue)&0xFF), 1};
+}
+
+CSSColor css_value_to_color(CSSAST *ast, const char *key) {
+  CSSAST *val = css_get_value(ast, (char *)key);
+
+  if (val && val->args && val->args->size >= 3) {
+    CSSAST *_r = (CSSAST *)list_at(val->args, 0);
+    CSSAST *_g = (CSSAST *)list_at(val->args, 1);
+    CSSAST *_b = (CSSAST *)list_at(val->args, 2);
+
+    float r = css_ast_get_float(_r);
+    float g = css_ast_get_float(_g);
+    float b = css_ast_get_float(_b);
+    float a = 1.0f;
+
+    if (val->args->size >= 4) {
+      CSSAST *_a = (CSSAST *)list_at(val->args, 3);
+
+      a = css_ast_get_float(_a);
+    }
+
+    return (CSSColor){r, g, b, a};
+  } else if (val && val->value_str) {
+    return css_hex_to_color(val->value_str);
+  }
+  return (CSSColor){-1, -1, -1, -1};
+}
+
+CSSColor css_get_value_color(CSSAST *ast, const char *key) {
+  return css_value_to_color(ast, key);
 }

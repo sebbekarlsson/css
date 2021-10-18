@@ -8,6 +8,47 @@ extern "C" {
 #include <lexer.h>
 #include <parser.h>
 
+typedef enum {
+  CSS_DISPLAY_AUTO,
+  CSS_DISPLAY_BLOCK,
+  CSS_DISPLAY_INLINE_BLOCK,
+  CSS_DISPLAY_TABLE_CELL,
+  CSS_DISPLAY_FLEX,
+  CSS_DISPLAY_GRID
+} ECSSDisplay;
+
+typedef enum {
+  CSS_FLEX_DIRECTION_ROW,
+  CSS_FLEX_DIRECTION_COLUMN,
+} ECSSFlexDirection;
+
+typedef enum {
+  CSS_FLEX_ALIGN_BEGIN,
+  CSS_FLEX_ALIGN_END,
+  CSS_FLEX_ALIGN_CENTER,
+} ECSSFlexAlign;
+
+typedef enum {
+  CSS_POSITION_AUTO,
+  CSS_POSITION_ABSOLUTE,
+  CSS_POSITION_RELATIVE
+} ECSSPosition;
+
+typedef struct CSS_COLOR_STRUCT {
+  float r;
+  float g;
+  float b;
+  float a;
+} CSSColor;
+
+ECSSDisplay css_to_display(char *value);
+ECSSFlexDirection css_to_flex_direction(char *value);
+ECSSFlexAlign css_to_flex_align(char *value);
+ECSSPosition css_to_position(char *value);
+CSSColor css_hex_to_color(char *value);
+CSSColor css_value_to_color(CSSAST *ast, const char *key);
+CSSColor css_get_value_color(CSSAST *ast, const char *key);
+
 CSSAST *css(char *value);
 CSSAST *css_anon(char *value);
 
@@ -29,11 +70,11 @@ float css_get_value_float(CSSAST *ast, char *key);
 
 void css_free(CSSAST *css);
 
-  CSSAST *css_get_rule(CSSAST *css, char *selector);
+CSSAST *css_get_rule(CSSAST *css, char *selector);
 
-  CSSAST* css_copy(CSSAST* css);
+CSSAST *css_copy(CSSAST *css);
 
-  void css_reindex(CSSAST* css);
+void css_reindex(CSSAST *css);
 
 #ifdef __cplusplus
 }
