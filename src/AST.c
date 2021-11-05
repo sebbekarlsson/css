@@ -1,5 +1,5 @@
 #include <AST.h>
-#include <list.h>
+#include <css_list.h>
 #include <mem.h>
 #include <parser.h>
 #include <stdio.h>
@@ -124,7 +124,7 @@ char *css_ast_selector_to_string(CSSAST *ast) {
     return value;
 
   for (int i = 0; i < ast->rule_selectors->size; i++) {
-    char *v = ast_to_string(list_at(ast->rule_selectors, i));
+    char *v = ast_to_string(css_list_at(ast->rule_selectors, i));
     str_append(&value, v);
     free(v);
   }

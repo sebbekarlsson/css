@@ -1,7 +1,7 @@
 #ifndef XCSS_AST_H
 #define XCSS_AST_H
 #include <hashmap/map.h>
-#include <list.h>
+#include <css_list.h>
 #include <token.h>
 
 typedef struct CSS_AST_STRUCT {
