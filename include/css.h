@@ -47,6 +47,7 @@ ECSSFlexAlign css_to_flex_align(char *value);
 ECSSPosition css_to_position(char *value);
 CSSColor css_hex_to_color(char *value);
 CSSColor css_value_to_color(CSSAST *ast, const char *key);
+
 CSSColor css_get_value_color(CSSAST *ast, const char *key);
 
 CSSAST *css(char *value);
