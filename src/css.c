@@ -245,6 +245,10 @@ void css_free(CSSAST *css) {
   free(css);
 }
 
+unsigned int css_value_is_set(CSSAST* ast, char* key) {
+  return css_get_value(ast, key) != 0;
+}
+
 static List *css_copy_css_list(List *incss_list) {
   if (!incss_list || (incss_list && incss_list->size == 0))
     return 0;
