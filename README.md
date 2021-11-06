@@ -1,0 +1,21 @@
+# css parser
+> CSS parsing library
+
+
+## Usage
+``` C
+#include <css.h>
+#include <stdio.h>
+
+
+int main(int argc, char* argv[]) {
+    CSSAST* parsed = css("{ color: red; width: 32px; height: 32px; }");
+    CSSColor color = css_get_value_color(parsed, "color");
+   
+    printf("%1.2f, %1.2f, %1.2f %1.2f\n", color.r, color.g, color.b, color.a);
+    
+    css_free(parsed);
+    
+    return 0;
+}
+```
