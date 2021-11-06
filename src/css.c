@@ -354,6 +354,18 @@ ECSSFlexAlign css_to_flex_align(char *value) {
   return CSS_FLEX_ALIGN_BEGIN;
 }
 
+ECSSTextAlign css_to_text_align(char *value) {
+    if (value == 0)
+    return CSS_TEXT_ALIGN_LEFT;
+  if (strcmp(value, "left") == 0)
+    return CSS_TEXT_ALIGN_LEFT;
+  if (strcmp(value, "RIGHT") == 0)
+    return CSS_TEXT_ALIGN_RIGHT;
+  if (strcmp(value, "center") == 0)
+    return CSS_TEXT_ALIGN_CENTER;
+  return CSS_FLEX_ALIGN_LEFT;
+}
+
 ECSSPosition css_to_position(char *value) {
   if (value == 0)
     return CSS_POSITION_AUTO;
@@ -414,4 +426,9 @@ CSSColor css_value_to_color(CSSAST *ast, const char *key) {
 
 CSSColor css_get_value_color(CSSAST *ast, const char *key) {
   return css_value_to_color(ast, key);
+}
+
+ECSSTextAlign css_get_value_align(CSSAST* ast, const char* key) {
+  char* str = css_get_value_string(ast, (char*)key);
+  return css_to_text_align(str);
 }

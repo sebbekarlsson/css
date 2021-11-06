@@ -34,6 +34,12 @@ typedef enum {
   CSS_POSITION_RELATIVE
 } ECSSPosition;
 
+typedef enum {
+CSS_TEXT_ALIGN_CENTER,
+CSS_TEXT_ALIGN_LEFT,
+CSS_TEXT_ALIGN_RIGHT
+} ECSSTextAlign;
+
 typedef struct CSS_COLOR_STRUCT {
   float r;
   float g;
@@ -44,11 +50,13 @@ typedef struct CSS_COLOR_STRUCT {
 ECSSDisplay css_to_display(char *value);
 ECSSFlexDirection css_to_flex_direction(char *value);
 ECSSFlexAlign css_to_flex_align(char *value);
+ECSSTextAlign css_to_text_align(char *value);
 ECSSPosition css_to_position(char *value);
 CSSColor css_hex_to_color(char *value);
 CSSColor css_value_to_color(CSSAST *ast, const char *key);
 
 CSSColor css_get_value_color(CSSAST *ast, const char *key);
+ECSSTextAlign css_get_value_align(CSSAST* ast, const char* key);
 
 CSSAST *css(char *value);
 CSSAST *css_anon(char *value);
