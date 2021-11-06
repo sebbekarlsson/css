@@ -363,7 +363,7 @@ ECSSTextAlign css_to_text_align(char *value) {
     return CSS_TEXT_ALIGN_RIGHT;
   if (strcmp(value, "center") == 0)
     return CSS_TEXT_ALIGN_CENTER;
-  return CSS_FLEX_ALIGN_LEFT;
+  return CSS_TEXT_ALIGN_LEFT;
 }
 
 ECSSPosition css_to_position(char *value) {
