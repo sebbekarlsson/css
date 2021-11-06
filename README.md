@@ -14,7 +14,6 @@ int main(int argc, char* argv[]) {
     CSSAST* rule = css_get_rule(parsed, "div");
     CSSColor color = css_get_value_color(rule, "color");
 
-   
     printf("%1.2f, %1.2f, %1.2f %1.2f\n", color.r, color.g, color.b, color.a);
     
     css_free(parsed);
