@@ -9,8 +9,11 @@
 
 
 int main(int argc, char* argv[]) {
-    CSSAST* parsed = css("{ color: red; width: 32px; height: 32px; }");
-    CSSColor color = css_get_value_color(parsed, "color");
+    CSSAST* parsed = css("div { color: red; width: 32px; height: 32px; }");
+    
+    CSSAST* rule = css_get_rule(parsed, "div");
+    CSSColor color = css_get_value_color(rule, "color");
+
    
     printf("%1.2f, %1.2f, %1.2f %1.2f\n", color.r, color.g, color.b, color.a);
     
