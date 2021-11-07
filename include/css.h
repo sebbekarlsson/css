@@ -12,8 +12,10 @@ typedef enum {
   CSS_DISPLAY_AUTO,
   CSS_DISPLAY_BLOCK,
   CSS_DISPLAY_INLINE_BLOCK,
+  CSS_DISPLAY_INLINE,
   CSS_DISPLAY_TABLE_CELL,
   CSS_DISPLAY_FLEX,
+  CSS_DISPLAY_NONE,
   CSS_DISPLAY_GRID
 } ECSSDisplay;
 
@@ -57,6 +59,7 @@ CSSColor css_value_to_color(CSSAST *ast, const char *key);
 
 CSSColor css_get_value_color(CSSAST *ast, const char *key);
 ECSSTextAlign css_get_value_align(CSSAST* ast, const char* key);
+ECSSDisplay css_get_value_display(CSSAST* ast, const char* key);
 
 CSSAST *css(char *value);
 CSSAST *css_anon(char *value);
