@@ -68,7 +68,7 @@ CSSToken *css_lexer_parse_statement(CSSLexer *lexer) {
   css_lexer_advance(lexer);
 
   while ((!(lexer->c == '\r' || lexer->c == '\n' || lexer->c == ' ' ||
-            lexer->c == ';' && lexer->c != '"' && lexer->c != '\'')) &&
+            (lexer->c == ';' && lexer->c != '"' && lexer->c != '\''))) &&
          !LEXER_DONE(lexer)) {
     STR_APPEND_CHAR(value, lexer->c);
     css_lexer_advance(lexer);

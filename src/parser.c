@@ -16,10 +16,13 @@
 
 #define PARSER_HAS_NEXT(parser) (!PARSER_DONE(parser))
 
+
+static void noop() {}
+
 #ifdef _DEBUG
 #define _DBG(...) printf("%s\n", __FUNCTION_NAME__)
 #else
-#define _DBG(msg) 0
+#define _DBG(msg) noop()
 #endif
 
 CSSParser *init_css_parser(CSSLexer *lexer) {
@@ -237,6 +240,18 @@ CSSAST *css_parser_parse_decl(CSSParser *parser) {
   if (parser->token->type != TOKEN_LBRACE)
     css_parser_eat(parser, TOKEN_COLON);
   ast->right = css_parser_parse_term(parser);
+
+  if (parser->token->type == TOKEN_COMMA) {
+    CSSAST *right = ast->right;
+
+    if (right->children == 0)
+      right->children = init_css_list(sizeof(CSSAST *));
+
+    while (parser->token->type == TOKEN_COMMA) {
+      css_parser_eat(parser, TOKEN_COMMA);
+      css_list_append(right->children, css_parser_parse_term(parser));
+    }
+  }
 
   // while (parser->token->type == TOKEN_SEMI)
   //  css_parser_eat(parser, parser->token->type);
