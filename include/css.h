@@ -60,6 +60,7 @@ CSSColor css_value_to_color(CSSAST *ast, const char *key);
 CSSColor css_get_value_color(CSSAST *ast, const char *key);
 ECSSTextAlign css_get_value_align(CSSAST* ast, const char* key);
 ECSSDisplay css_get_value_display(CSSAST* ast, const char* key);
+ECSSPosition css_get_value_position(CSSAST* ast, const char* key);
 
 CSSAST *css(char *value);
 CSSAST *css_anon(char *value);

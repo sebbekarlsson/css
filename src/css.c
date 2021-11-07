@@ -323,6 +323,8 @@ ECSSDisplay css_to_display(char *value) {
     return CSS_DISPLAY_BLOCK;
   if (strcmp(value, "inline-block") == 0)
     return CSS_DISPLAY_INLINE_BLOCK;
+   if (strcmp(value, "inline") == 0)
+    return CSS_DISPLAY_INLINE;
   if (strcmp(value, "table-cell") == 0)
     return CSS_DISPLAY_TABLE_CELL;
   if (strcmp(value, "flex") == 0)
@@ -379,18 +381,13 @@ ECSSPosition css_to_position(char *value) {
 }
 
 ECSSDisplay css_get_value_display(CSSAST* ast, const char* key) {
-  if (value == 0)
-    return CSS_DISPLAY_AUTO;
+  char* str = css_get_value_string(ast, (char *)key);
+  return css_to_display(str);
+}
 
-  if (strcmp(value, "block") == 0) return CSS_DISPLAY_BLOCK;
-  if (strcmp(value, "flex") == 0) return CSS_DISPLAY_FLEX;
-  if (strcmp(value, "inline") == 0) return CSS_DISPLAY_INLINE;
-  if (strcmp(value, "inline-block") == 0) return CSS_DISPLAY_INLINE_BLOCK;
-  if (strcmp(value, "none") == 0) return CSS_DISPLAY_NONE;
-  if (strcmp(value, "table-cell") == 0) return CSS_DISPLAY_TABLE_CELL;
-  if (strcmp(value, "grid") == 0) return CSS_DISPLAY_GRID;
-
-  return CSS_DISPLAY_AUTO;
+ECSSPosition css_get_value_position(CSSAST* ast, const char* key){
+  char* str = css_get_value_string(ast, (char *)key);
+  return css_to_position(str);
 }
 
 static const char *ensure_hex(char *value) {
