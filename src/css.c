@@ -353,6 +353,8 @@ ECSSFlexAlign css_to_flex_align(char *value) {
     return CSS_FLEX_ALIGN_END;
   if (strcmp(value, "flex-center") == 0)
     return CSS_FLEX_ALIGN_CENTER;
+  if (strcmp(value, "center") == 0)
+    return CSS_FLEX_ALIGN_CENTER;
   return CSS_FLEX_ALIGN_BEGIN;
 }
 
@@ -383,6 +385,11 @@ ECSSPosition css_to_position(char *value) {
 ECSSDisplay css_get_value_display(CSSAST* ast, const char* key) {
   char* str = css_get_value_string(ast, (char *)key);
   return css_to_display(str);
+}
+
+ECSSFlexAlign css_get_value_flex_align(CSSAST* ast, const char* key) {
+  char* str = css_get_value_string(ast, (char *)key);
+  return css_to_flex_align(str);
 }
 
 ECSSPosition css_get_value_position(CSSAST* ast, const char* key){
