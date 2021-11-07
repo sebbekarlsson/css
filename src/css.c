@@ -317,6 +317,9 @@ const char *css_crayola_to_hex(char *name) {
 ECSSDisplay css_to_display(char *value) {
   if (value == 0)
     return CSS_DISPLAY_AUTO;
+
+  if (strcmp(value, "none") == 0)
+    return CSS_DISPLAY_NONE;
   if (strcmp(value, "auto") == 0)
     return CSS_DISPLAY_AUTO;
   if (strcmp(value, "block") == 0)
