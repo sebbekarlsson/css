@@ -1,0 +1,2 @@
+-I./include
+-I./build/_deps/hashmap_static-src/include

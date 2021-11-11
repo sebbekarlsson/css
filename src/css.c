@@ -4,6 +4,8 @@
 #include <string.h>
 #include <sys/param.h>
 #include <token.h>
+#include <stdio.h>
+#include <assert.h>
 
 CSSAST *css(char *value) {
   CSSLexer *lexer = init_css_lexer(value);
@@ -216,8 +218,6 @@ void css_free(CSSAST *css) {
     css_free(css->left);
   if (css->right)
     css_free(css->right);
-  if (css->unit)
-    free(css->unit);
 
   if (css->value_str) {
     free(css->value_str);
@@ -280,6 +280,8 @@ CSSAST *css_copy(CSSAST *css) {
   ast->left = css_copy(css->left);
   ast->right = css_copy(css->right);
   ast->token = css_token_clone(css->token);
+  ast->is_important = css->is_important;
+  ast->unit = css->unit;
   css_reindex(ast);
   return ast;
 }
@@ -326,6 +328,8 @@ ECSSDisplay css_to_display(char *value) {
     return CSS_DISPLAY_BLOCK;
   if (strcmp(value, "inline-block") == 0)
     return CSS_DISPLAY_INLINE_BLOCK;
+  if (strcmp(value, "inline-flex") == 0)
+    return CSS_DISPLAY_INLINE_FLEX;
    if (strcmp(value, "inline") == 0)
     return CSS_DISPLAY_INLINE;
   if (strcmp(value, "table-cell") == 0)
@@ -446,6 +450,59 @@ CSSColor css_value_to_color(CSSAST *ast, const char *key) {
   return (CSSColor){-1, -1, -1, -1};
 }
 
+void assert_is_decl(CSSAST* ast) {
+  assert(ast != 0);
+  assert(ast->type == CSS_AST_DECL);
+  assert(ast->left != 0);
+  assert(ast->right != 0);
+  assert(ast->left->value_str != 0);
+}
+
+void css_unset_value(CSSAST* ast, char* key) {
+  int size = (int)ast->children->size;
+
+  for (int i = 0; i < size; i++) {
+    CSSAST* child = (CSSAST*)ast->children->items[i];
+    assert_is_decl(child);
+
+    if (strcmp(child->left->value_str, key) == 0)
+      css_list_remove(ast->children, child, (void(*)(void*))css_free);
+  }
+
+  map_unset(ast->keyvalue, key);
+}
+
+void css_add_decl(CSSAST* ast, CSSAST* decl) {
+  assert(ast != 0);
+  assert_is_decl(decl);
+  assert(ast->keyvalue != 0);
+
+
+  CSSAST* existing = (CSSAST*)css_get_value(ast, decl->left->value_str);
+  if (existing && existing->is_important) {
+    return;
+  } else if (existing != 0) {
+    css_unset_value(ast, decl->left->value_str);
+  }
+
+  CSSAST* newdecl = css_copy(decl);
+
+  css_list_append(ast->children, newdecl);
+  map_set(ast->keyvalue, newdecl->left->value_str, newdecl->right);
+}
+
+CSSAST* css_merge(CSSAST* a, CSSAST* b) {
+  if (a->type != CSS_AST_RULE || b->type != CSS_AST_RULE) {
+    fprintf(stderr, "CSS: Can only merge rules.\n");
+  }
+  for (int i = 0; i < (int)b->children->size; i++) {
+    CSSAST* child = (CSSAST*)b->children->items[i];
+    css_add_decl(a, child);
+  }
+
+  return a;
+}
+
 CSSColor css_get_value_color(CSSAST *ast, const char *key) {
   return css_value_to_color(ast, key);
 }
@@ -453,4 +510,65 @@ CSSColor css_get_value_color(CSSAST *ast, const char *key) {
 ECSSTextAlign css_get_value_align(CSSAST* ast, const char* key) {
   char* str = css_get_value_string(ast, (char*)key);
   return css_to_text_align(str);
+}
+
+
+static void _css_query(CSSAST* cssnode, const char* selector, List* list) {
+  char* str = ast_to_string(cssnode);
+
+  if (str) {
+    if (strcmp(str, selector) == 0) css_list_append(list, cssnode);
+  }
+
+  if (cssnode->children) {
+    for (int i = 0; i < (int)cssnode->children->size; i++) {
+      CSSAST* child = (CSSAST*)cssnode->children->items[i];
+      _css_query(child, selector, list);
+    }
+  }
+}
+
+List* css_query(CSSAST* cssnode, const char* selector) {
+  List* list = init_css_list(sizeof(CSSAST*));
+
+  _css_query(cssnode, selector, list);
+
+  return list;
+}
+
+
+static float percentage(float x, float y) {
+  return (x / 100.0f) * y;
+}
+
+float css_get_value_float_computed(CSSAST* ast, const char* key, CSSContext context) {
+  CSSAST* value = css_get_value(ast, (char*)key);
+  if (value == 0) return 0;
+
+  float x = css_get_value_float(ast, (char*)key);
+
+  float z = x;
+
+  switch (value->unit) {
+    case CSS_UNIT_PERCENT: z = percentage(x, context.size); break;
+    case CSS_UNIT_REM: z = x * context.rem; break;
+    case CSS_UNIT_EM: z = x * context.em; break;
+    case CSS_UNIT_PX: z = x; break;
+    case CSS_UNIT_VH: z = percentage(x, context.vh); break;
+    case CSS_UNIT_VW: z = percentage(x, context.vh); break;
+    default: { z = x; } break;
+  }
+
+  return z;
+}
+
+
+ECSSValueType css_get_value_type(CSSAST* ast, const char* key) {
+  char* str = css_get_value_string(ast, (char*)key);
+  if (str == 0) return CSS_UNSPECIFIED;
+
+  if (strcmp(str, "auto") == 0) return CSS_AUTO;
+  if (strcmp(str, "none") == 0) return CSS_NONE;
+
+  return CSS_UNSPECIFIED;
 }

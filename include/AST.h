@@ -4,6 +4,17 @@
 #include <css_list.h>
 #include <token.h>
 
+typedef enum {
+CSS_UNIT_PX,
+CSS_UNIT_PERCENT,
+CSS_UNIT_REM,
+CSS_UNIT_EM,
+CSS_UNIT_PT,
+CSS_UNIT_FR,
+CSS_UNIT_VW,
+CSS_UNIT_VH
+} ECSSUnit;
+
 typedef struct CSS_AST_STRUCT {
   List *children;
   List *rule_selectors;
@@ -15,6 +26,8 @@ typedef struct CSS_AST_STRUCT {
     CSS_AST_FLOAT,
     CSS_AST_DOUBLE,
     CSS_AST_ID,
+    CSS_AST_CLASSNAME,
+    CSS_AST_PSEUDO_CLASS,
     CSS_AST_COMPOUND,
     CSS_AST_RULE,
     CSS_AST_SELECTOR,
@@ -30,13 +43,14 @@ typedef struct CSS_AST_STRUCT {
   struct CSS_AST_STRUCT *left;
   struct CSS_AST_STRUCT *right;
   CSSToken *token;
-  char *unit;
 
   int value_int;
   char *value_str;
   float value_float;
   double value_double;
   map_T *keyvalue;
+  unsigned int is_important;
+  ECSSUnit unit;
 } CSSAST;
 
 CSSAST *init_css_ast(int type);

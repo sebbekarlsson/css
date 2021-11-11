@@ -30,7 +30,7 @@ void css_lexer_advance(CSSLexer *lexer) {
     lexer->i += 1;
     lexer->c = lexer->value[lexer->i];
   } else {
-    printf("Lexer out of range.\n");
+    printf("(CSS): Lexer out of range.\n");
   }
 }
 
@@ -54,7 +54,18 @@ CSSToken *css_lexer_parse_id(CSSLexer *lexer) {
     css_lexer_advance(lexer);
   }
 
-  CSSToken *token = init_css_token(TOKEN_ID, value);
+  int type = TOKEN_ID;
+
+
+  if (value) {
+    if (value[0] == '.') {
+      type = TOKEN_CLASSNAME;
+    } else if (strcmp(value, "!important") == 0) {
+      type = TOKEN_IMPORTANT;
+    }
+  }
+
+  CSSToken *token = init_css_token(type, value);
 
   free(value);
 
@@ -283,7 +294,7 @@ CSSToken *_css_lexer_next_token(CSSLexer *lexer) {
       break;
     default: {
       if (lexer->c != '\0') {
-        printf("Lexer: Unexpected character `%c` (%d)\n", lexer->c, lexer->c);
+        printf("(CSS) Lexer: Unexpected character `%c` (%d)\n", lexer->c, lexer->c);
         exit(1);
       }
     } break;

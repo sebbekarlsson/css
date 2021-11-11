@@ -12,6 +12,7 @@ CSSAST *init_css_ast(int type) {
   ast->type = type;
   ast->children = 0;
   ast->keyvalue = NEW_MAP();
+  ast->unit = CSS_UNIT_PX;
 
   return ast;
 }

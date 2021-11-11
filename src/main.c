@@ -3,7 +3,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
+  CSSAST* a = css(".box { background-color: red; width: 33px; } div { color: green; } div:hover { color: blue; }");
+  List* results = css_query(a, ".box");
+
+  if (results && results->size) {
+    CSSAST* r = (CSSAST*)results->items[0];
+
+    float x = css_get_value_float(r, "width");
+    float value = css_get_value_float_computed(r, "width", (CSSContext){ 0, 0 });
+    printf("%12.6f\n", value);
+  }
+  //CSSAST* a = css_anon("color: red; width: 32px; height: 32px");
+  //CSSAST* b = css_anon("color: blue; width: 32px; height: 32px");
+  //CSSAST* c = css_merge(a, b);
+
+  //char* color = css_get_value_string(c, "color");
+
+  //printf("%s\n", color);
+
+  return 0;
+}
+
+
+int main2(int argc, char *argv[]) {
   /*CSSAST *cssdata = css("{"
                      "  background-color: red;"
                      "  color: #00FF00;"
@@ -26,19 +49,10 @@ int main(int argc, char *argv[]) {
   char *g = css_read_file(argv[1]);
   CSSAST *cssdata = css(g);
 
-  CSSAST* copied = css_copy(cssdata);
+  List* results = css_query(cssdata, "slot");
 
-  CSSAST *rule = css_get_rule(copied, "input");
+  printf("%d\n", (int)results->size);
 
-  if (rule) {
-    CSSColor color = css_get_value_color(rule, "background-color");
-
-    printf("%1.2f %1.2f %1.2f %1.2f\n", color.r, color.g, color.b, color.a);
-  }
-
-  css_free(cssdata);
-  css_free(copied);
-  free(g);
 
   return 0;
 }

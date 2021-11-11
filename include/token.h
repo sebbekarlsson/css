@@ -31,6 +31,8 @@ typedef struct {
     TOKEN_LT,
     TOKEN_PERCENTAGE,
     TOKEN_MINUS,
+    TOKEN_IMPORTANT,
+    TOKEN_CLASSNAME,
     TOKEN_EOF
   } type;
 } CSSToken;

@@ -7,12 +7,16 @@ extern "C" {
 #include <AST.h>
 #include <lexer.h>
 #include <parser.h>
+#include <css_context.h>
+
+
 
 typedef enum {
   CSS_DISPLAY_AUTO,
   CSS_DISPLAY_BLOCK,
   CSS_DISPLAY_INLINE_BLOCK,
   CSS_DISPLAY_INLINE,
+  CSS_DISPLAY_INLINE_FLEX,
   CSS_DISPLAY_TABLE_CELL,
   CSS_DISPLAY_FLEX,
   CSS_DISPLAY_NONE,
@@ -42,6 +46,13 @@ CSS_TEXT_ALIGN_LEFT,
 CSS_TEXT_ALIGN_RIGHT
 } ECSSTextAlign;
 
+
+typedef enum {
+CSS_UNSPECIFIED,
+CSS_AUTO,
+CSS_NONE
+} ECSSValueType;
+
 typedef struct CSS_COLOR_STRUCT {
   float r;
   float g;
@@ -62,6 +73,7 @@ ECSSTextAlign css_get_value_align(CSSAST* ast, const char* key);
 ECSSDisplay css_get_value_display(CSSAST* ast, const char* key);
 ECSSPosition css_get_value_position(CSSAST* ast, const char* key);
 ECSSFlexAlign css_get_value_flex_align(CSSAST* ast, const char* key);
+ECSSValueType css_get_value_type(CSSAST* ast, const char* key);
 
 CSSAST *css(char *value);
 CSSAST *css_anon(char *value);
@@ -78,16 +90,22 @@ char *css_get_value_string(CSSAST *ast, char *key);
 
 void css_set_value_string(CSSAST *ast, char *key, char *value);
 void css_set_value_int(CSSAST *ast, char *key, float value);
-void css_set_value_float(CSSAST *ast, char *key, float value);
+  void css_set_value_float(CSSAST *ast, char *key, float value);
+
+CSSAST* css_merge(CSSAST* a, CSSAST* b);
 
 const char *css_crayola_to_hex(char *name);
 
 int css_get_value_int(CSSAST *ast, char *key);
 float css_get_value_float(CSSAST *ast, char *key);
 
+float css_get_value_float_computed(CSSAST* ast, const char* key, CSSContext context);
+
 void css_free(CSSAST *css);
 
 CSSAST *css_get_rule(CSSAST *css, char *selector);
+
+List* css_query(CSSAST* css, const char* selector);
 
 CSSAST *css_copy(CSSAST *css);
 
