@@ -1,0 +1,11 @@
+--2021-11-12 23:22:51--  https://www.omnix.nu//rs-MyStyle.scss?release_version=1.118
+Resolving www.omnix.nu (www.omnix.nu)... 35.228.19.145
+Connecting to www.omnix.nu (www.omnix.nu)|35.228.19.145|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/css]
+Saving to: ‘rs-MyStyle.scss?release_version=1.118’
+
+        rs-MySt     [<=>    ]       0  --.-KB/s               rs-MyStyle.scss     [ <=>   ] 484.69K  --.-KB/s    in 0.1s    
+
+2021-11-12 23:22:51 (4.79 MB/s) - ‘rs-MyStyle.scss?release_version=1.118’ saved [496326]
+

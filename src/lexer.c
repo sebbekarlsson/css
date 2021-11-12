@@ -42,6 +42,14 @@ void css_lexer_skip_whitespace(CSSLexer *lexer) {
   }
 }
 
+void css_lexer_skip_invalid_chars(CSSLexer* lexer) {
+  while (lexer->c < 0 &&!(LEXER_DONE(lexer))) {
+    printf("(CSS) Skipping unknown byte `%c` (%d)\n", lexer->c, lexer->c);
+    css_lexer_advance(lexer);
+  }
+}
+
+
 CSSToken *css_lexer_parse_id(CSSLexer *lexer) {
   char *value = 0;
 
@@ -62,6 +70,8 @@ CSSToken *css_lexer_parse_id(CSSLexer *lexer) {
       type = TOKEN_CLASSNAME;
     } else if (strcmp(value, "!important") == 0) {
       type = TOKEN_IMPORTANT;
+    } else if (strcmp(value, "url") == 0) {
+      type = TOKEN_URL;
     }
   }
 
@@ -165,7 +175,7 @@ CSSToken *css_lexer_parse_hash(CSSLexer *lexer) {
     css_lexer_advance(lexer);
   }
 
-  CSSToken *token = init_css_token(TOKEN_STR, value);
+  CSSToken *token = init_css_token(TOKEN_HASH, value);
 
   free(value);
 
@@ -215,6 +225,7 @@ CSSToken *_css_lexer_next_token(CSSLexer *lexer) {
     }
 
     css_lexer_skip_whitespace(lexer);
+    css_lexer_skip_invalid_chars(lexer);
 
     if (isdigit(lexer->c) || lexer->c == '.' || (lexer->c == '-' && isdigit(css_lexer_peek(lexer, 1))))
       return css_lexer_parse_number(lexer);
@@ -231,6 +242,25 @@ CSSToken *_css_lexer_next_token(CSSLexer *lexer) {
       CSSToken *tok = init_css_token(TOKEN_COLON_COLON, (char *)"::");
       css_lexer_advance(lexer);
       css_lexer_advance(lexer);
+      return tok;
+    }
+
+    if (lexer->c == '\\' && css_lexer_peek(lexer, 1) == '"') {
+      css_lexer_advance(lexer);
+      css_lexer_advance(lexer);
+
+      char* str = 0;
+
+      while (!LEXER_DONE(lexer)) {
+        STR_APPEND_CHAR(str, lexer->c);
+        css_lexer_advance(lexer);
+        if (lexer->c == '\\' && css_lexer_peek(lexer, 1) == '"') break;
+      }
+
+      css_lexer_advance(lexer);
+      css_lexer_advance(lexer);
+
+      CSSToken* tok = init_css_token(TOKEN_STR, str);
       return tok;
     }
 
@@ -329,4 +359,15 @@ char css_lexer_peek(CSSLexer *lexer, long int index) {
   index = MAX(0, MIN(lexer->len - 1, lexer->i + index));
 
   return lexer->value[index];
+}
+
+char *css_lexer_parse_string_until(CSSLexer *lexer, char c) {
+  char *s = 0;
+
+  while (lexer->c != c) {
+    STR_APPEND_CHAR(s, c);
+    css_lexer_advance(lexer);
+  }
+
+  return s;
 }

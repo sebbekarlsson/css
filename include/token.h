@@ -33,6 +33,7 @@ typedef struct {
     TOKEN_MINUS,
     TOKEN_IMPORTANT,
     TOKEN_CLASSNAME,
+    TOKEN_URL,
     TOKEN_EOF
   } type;
 } CSSToken;

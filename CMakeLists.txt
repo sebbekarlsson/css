@@ -8,6 +8,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests DESTINATION ${CMAKE_CURRENT_BINARY_D
 file(GLOB PUBLIC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 file(GLOB css_sources ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c)
 
+add_subdirectory(tests)
 
 add_compile_options(-g -Wall)
 

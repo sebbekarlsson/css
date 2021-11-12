@@ -37,7 +37,7 @@ CSSParser *init_css_parser(CSSLexer *lexer) {
 
 void css_parser_eat(CSSParser *parser, int token_type) {
   if (parser->token->type != token_type) {
-    printf("(Lexer) Parser: Unexpected token: `%s` (%d), was expecting (%d)\n",
+    printf("Parser: Unexpected token: `%s` (%d), was expecting (%d)\n",
            parser->token->value, parser->token->type, token_type);
     exit(1);
   } else {
@@ -89,13 +89,13 @@ CSSAST *css_parser_parse_string(CSSParser *parser) {
   char *value = SSTRDUP(parser->token->value);
   CSSAST *ast = init_css_ast(CSS_AST_STR);
   ast->value_str = value;
-  css_parser_eat(parser, TOKEN_STR);
+  css_parser_eat(parser, parser->token->type == TOKEN_STR ? TOKEN_STR : TOKEN_HASH);
 
   CSSAST *left = ast;
   while (left &&
          (parser->token->type == TOKEN_ID || parser->token->type == TOKEN_STR ||
           parser->token->type == TOKEN_INT ||
-          parser->token->type == TOKEN_FLOAT)) {
+          parser->token->type == TOKEN_FLOAT || parser->token->type == TOKEN_HASH)) {
     if (!(left->children)) {
       left->children = init_css_list(sizeof(CSSAST *));
     }
@@ -155,6 +155,21 @@ CSSAST *css_parser_parse_factor(CSSParser *parser) {
   _DBG();
   CSSAST *left = 0;
 
+  if (parser->token->type == TOKEN_URL) {
+    css_parser_eat(parser, TOKEN_URL);
+    css_parser_eat(parser, TOKEN_LPAREN);
+    if (parser->token->type == TOKEN_STR && (parser->lexer->c == '"' || parser->lexer->c =='\'')) {
+      return css_parser_parse_string(parser);
+    }
+
+    char* junk = css_lexer_parse_string_until(parser->lexer, ')');
+    CSSAST* strast = init_css_ast(CSS_AST_STR);
+    strast->value_str = junk;
+    parser->token = css_lexer_next_token(parser->lexer);
+    css_parser_eat(parser, TOKEN_RPAREN);
+    return strast;
+  }
+
   if (parser->token->type == TOKEN_COLON) {
     css_parser_eat(parser, TOKEN_COLON);
     CSSAST* pseudo = css_parser_parse_factor(parser);
@@ -188,7 +203,8 @@ CSSAST *css_parser_parse_factor(CSSParser *parser) {
   }
 
   switch (parser->token->type) {
-  case TOKEN_STR:
+    case TOKEN_STR:
+    case TOKEN_HASH:
     left = css_parser_parse_string(parser);
     break;
   case TOKEN_INT:
@@ -224,6 +240,7 @@ CSSAST *css_parser_parse_factor(CSSParser *parser) {
     css_parser_eat(parser, TOKEN_RPAREN);
 
     left = acall;
+
   }
 
   while (left && parser->token->type == TOKEN_LBRACKET) {
@@ -281,14 +298,14 @@ CSSAST *css_parser_parse_decl(CSSParser *parser) {
   //  css_parser_eat(parser, parser->token->type);
 
   if ((parser->token->type == TOKEN_ID || parser->token->type == TOKEN_FLOAT ||
-       parser->token->type == TOKEN_STR || parser->token->type == TOKEN_INT) &&
+       parser->token->type == TOKEN_STR || parser->token->type == TOKEN_INT || parser->token->type == TOKEN_HASH) &&
       ast->right != 0) {
     CSSAST *right = ast->right;
     right->children = init_css_list(sizeof(CSSAST *));
 
     while (
         parser->token->type == TOKEN_ID || parser->token->type == TOKEN_FLOAT ||
-        parser->token->type == TOKEN_STR || parser->token->type == TOKEN_INT) {
+        parser->token->type == TOKEN_STR || parser->token->type == TOKEN_INT || parser->token->type == TOKEN_HASH) {
       css_list_append(right->children, css_parser_parse_term(parser));
     }
   }
@@ -343,6 +360,8 @@ CSSAST *css_parser_parse_rule(CSSParser *parser) {
   _DBG();
   CSSAST *ast = init_css_ast(CSS_AST_RULE);
 
+  unsigned int is_media = strcmp(parser->token->value, "@media") == 0;
+
   if (parser->token->type != TOKEN_LBRACE) {
     ast->rule_selectors = init_css_list(sizeof(CSSAST *));
 
@@ -352,7 +371,7 @@ CSSAST *css_parser_parse_rule(CSSParser *parser) {
       css_list_append(ast->rule_selectors, selector);
     }
 
-    while (parser->token->type == TOKEN_COMMA ||
+    while (parser->token->type == TOKEN_COMMA || parser->token->type == TOKEN_HASH ||
            parser->token->type == TOKEN_ID || parser->token->type == TOKEN_COLON) {
       if (parser->token->type == TOKEN_COMMA) {
         css_parser_eat(parser, TOKEN_COMMA);
@@ -367,7 +386,23 @@ CSSAST *css_parser_parse_rule(CSSParser *parser) {
 
   if (parser->token->type == TOKEN_LBRACE) {
     css_parser_eat(parser, TOKEN_LBRACE);
-    css_parser_parse_rule_body(parser, ast);
+
+    if (is_media) {
+      ast->children = init_css_list(sizeof(CSSAST *));
+
+      if (!PARSER_DONE(parser)) {
+        css_list_append(ast->children, css_parser_parse_term(parser));
+      }
+
+      while (PARSER_HAS_NEXT(parser) && parser->token->type != TOKEN_RBRACE) {
+        while (parser->token->type == TOKEN_SEMI) {
+          css_parser_eat(parser, TOKEN_SEMI);
+        }
+        css_list_append(ast->children, css_parser_parse_expr(parser));
+      }
+    } else {
+      css_parser_parse_rule_body(parser, ast);
+    }
     css_parser_eat(parser, TOKEN_RBRACE);
   }
 
@@ -432,7 +467,15 @@ CSSAST *css_parser_parse_statement(CSSParser *parser) {
   ast->value_str = parser->token->value ? strdup(parser->token->value) : 0;
   css_parser_eat(parser, TOKEN_STATEMENT);
 
-  ast->right = css_parser_parse_term(parser);
+
+  if (parser->token->type == TOKEN_LBRACE) {
+    ast->type = CSS_AST_RULE;
+    css_parser_eat(parser, TOKEN_LBRACE);
+    css_parser_parse_rule_body(parser, ast);
+    css_parser_eat(parser, TOKEN_RBRACE);
+  } else {
+    ast->right = css_parser_parse_term(parser);
+  }
 
   return ast;
 }
@@ -441,7 +484,7 @@ CSSAST *css_parser_parse_expr(CSSParser *parser) {
   _DBG();
   if (parser->token->type == TOKEN_ID || parser->token->type == TOKEN_CLASSNAME ||
       parser->token->type == TOKEN_COLON_COLON ||
-      parser->token->type == TOKEN_COLON) {
+      parser->token->type == TOKEN_COLON || parser->token->type == TOKEN_HASH) {
     return css_parser_parse_rule(parser);
   }
 
