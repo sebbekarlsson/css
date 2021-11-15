@@ -12,7 +12,7 @@ char *char_to_string(char c);
 
 void str_append(char **s1, char *s2);
 
-#define SSTRDUP(s) s ? strdup(s) : s
+#define SSTRDUP(s) strdup(s ? s : "")
 
 #define SSTRINT(s) s ? atoi(s) : 0
 

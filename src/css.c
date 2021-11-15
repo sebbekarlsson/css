@@ -572,3 +572,10 @@ ECSSValueType css_get_value_type(CSSAST* ast, const char* key) {
 
   return CSS_UNSPECIFIED;
 }
+
+ECSSUnit css_get_value_unit(CSSAST* ast, const char* key) {
+  CSSAST* value = css_get_value(ast, (char*)key);
+  if (value == 0) return CSS_UNIT_PX;
+
+  return value->unit;
+}

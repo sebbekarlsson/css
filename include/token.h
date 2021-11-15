@@ -33,9 +33,15 @@ typedef struct {
     TOKEN_MINUS,
     TOKEN_IMPORTANT,
     TOKEN_CLASSNAME,
+    TOKEN_STAR,
     TOKEN_URL,
+    TOKEN_JUNK,
+    TOKEN_SQUARED,
+    TOKEN_ESCAPED_INT,
     TOKEN_EOF
-  } type;
+} type;
+
+    unsigned int special;
 } CSSToken;
 
 CSSToken *init_css_token(int type, char *value);

@@ -3,7 +3,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 int main(int argc, char* argv[]) {
+  char* content = css_read_file(argv[1]);
+  //printf("%s\n", content);
+  CSSAST* data = css(content);
+
+  printf("%p\n", data);
+
+  return 0;
+}
+
+int main3(int argc, char* argv[]) {
   CSSAST* a = css(".box { background-color: red; width: 33px; } div { color: green; } div:hover { color: blue; }");
   List* results = css_query(a, ".box");
 

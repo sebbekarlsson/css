@@ -6,6 +6,8 @@ typedef struct {
   char c;
   long int i;
   long unsigned int len;
+  long unsigned int row;
+  long unsigned int col;
 } CSSLexer;
 
 #define LEXER_DONE(Clexer) (lexer->c == '\0' || lexer->i >= lexer->len)
@@ -23,4 +25,7 @@ char css_lexer_peek(CSSLexer *lexer, long int index);
 char *css_lexer_parse_string_until(CSSLexer *lexer, char c);
 
 void css_lexer_skip_invalid_chars(CSSLexer* lexer);
+
+
+void css_lexer_get_position_string(CSSLexer* lexer, char* dest);
 #endif

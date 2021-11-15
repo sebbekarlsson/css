@@ -5,7 +5,7 @@
 CSSToken *init_css_token(int type, char *value) {
   CSSToken *token = NEW(CSSToken);
   token->type = type;
-  token->value = strdup(value);
+  token->value = strdup(value ? value : "");
 
   return token;
 }

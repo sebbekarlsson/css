@@ -12,7 +12,8 @@ CSS_UNIT_EM,
 CSS_UNIT_PT,
 CSS_UNIT_FR,
 CSS_UNIT_VW,
-CSS_UNIT_VH
+CSS_UNIT_VH,
+CSS_UNIT_DEG
 } ECSSUnit;
 
 typedef struct CSS_AST_STRUCT {
@@ -50,6 +51,7 @@ typedef struct CSS_AST_STRUCT {
   double value_double;
   map_T *keyvalue;
   unsigned int is_important;
+  unsigned int escaped;
   ECSSUnit unit;
 } CSSAST;
 

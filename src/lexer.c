@@ -21,6 +21,7 @@ CSSLexer *init_css_lexer(char *value) {
   lexer->i = 0;
   lexer->c = lexer->value[lexer->i];
   lexer->len = strlen(lexer->value);
+  lexer->row = 1;
 
   return lexer;
 }
@@ -29,6 +30,13 @@ void css_lexer_advance(CSSLexer *lexer) {
   if (lexer->i < lexer->len) {
     lexer->i += 1;
     lexer->c = lexer->value[lexer->i];
+
+    if (lexer->c == '\n') {
+      lexer->row += 1;
+      lexer->col = 0;
+    } else  {
+      lexer->col += 1;
+    }
   } else {
     printf("(CSS): Lexer out of range.\n");
   }
@@ -125,13 +133,16 @@ CSSToken *css_lexer_parse_string(CSSLexer *lexer) {
 
 CSSToken *css_lexer_parse_number(CSSLexer *lexer) {
   char *value = 0;
+  int type = lexer->c == '\\' ? TOKEN_ESCAPED_INT : lexer->c == '.' ? TOKEN_FLOAT : TOKEN_INT;
+
+  if (lexer->c == '\\')
+    css_lexer_advance(lexer);
 
   if (lexer->c == '-') {
     STR_APPEND_CHAR(value, lexer->c);
     css_lexer_advance(lexer);
   }
 
-  int type = lexer->c == '.' ? TOKEN_FLOAT : TOKEN_INT;
 
   if (lexer->c == '.') {
     STR_APPEND_CHAR(value, '0');
@@ -264,6 +275,10 @@ CSSToken *_css_lexer_next_token(CSSLexer *lexer) {
       return tok;
     }
 
+    if (lexer->c == '\\' && isdigit(css_lexer_peek(lexer, 1))) {
+      return css_lexer_parse_number(lexer);
+    }
+
     css_lexer_skip_whitespace(lexer);
 
     switch (lexer->c) {
@@ -280,8 +295,20 @@ CSSToken *_css_lexer_next_token(CSSLexer *lexer) {
     case '}':
       LEXER_TOK(lexer, TOKEN_RBRACE);
       break;
+    case '/':
+      LEXER_TOK(lexer, TOKEN_DIV);
+      break;
+    case '*':
+      LEXER_TOK(lexer, TOKEN_STAR);
+      break;
+    case '^':
+      LEXER_TOK(lexer, TOKEN_SQUARED);
+      break;
     case ',':
       LEXER_TOK(lexer, TOKEN_COMMA);
+      break;
+    case '~':
+      LEXER_TOK(lexer, TOKEN_TILDE);
       break;
     case ';':
       LEXER_TOK(lexer, TOKEN_SEMI);
@@ -324,7 +351,10 @@ CSSToken *_css_lexer_next_token(CSSLexer *lexer) {
       break;
     default: {
       if (lexer->c != '\0') {
-        printf("(CSS) Lexer: Unexpected character `%c` (%d)\n", lexer->c, lexer->c);
+//        LEXER_TOK(lexer, TOKEN_JUNK);
+        char buff[256];
+        css_lexer_get_position_string(lexer, buff);
+        printf("(CSS) Lexer (%s): Unexpected character `%c` (%d)\n", buff, lexer->c, lexer->c);
         exit(1);
       }
     } break;
@@ -339,6 +369,9 @@ CSSToken *_css_lexer_next_token(CSSLexer *lexer) {
 CSSToken *css_lexer_next_token(CSSLexer *lexer) {
   CSSToken *tok = _css_lexer_next_token(lexer);
 
+  if (tok->value[0] == '@' && strstr(tok->value, "font-face") == 0) {
+    tok->special = 1;
+  }
   if (strcmp(tok->value, "to") == 0)
     tok->type = TOKEN_STATEMENT;
   else if (strcmp(tok->value, "@media") == 0 ||
@@ -370,4 +403,9 @@ char *css_lexer_parse_string_until(CSSLexer *lexer, char c) {
   }
 
   return s;
+}
+
+
+void css_lexer_get_position_string(CSSLexer* lexer, char* dest) {
+  sprintf(dest, "%ld:%ld", lexer->row, lexer->col);
 }

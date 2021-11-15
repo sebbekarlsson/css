@@ -73,7 +73,9 @@ ECSSTextAlign css_get_value_align(CSSAST* ast, const char* key);
 ECSSDisplay css_get_value_display(CSSAST* ast, const char* key);
 ECSSPosition css_get_value_position(CSSAST* ast, const char* key);
 ECSSFlexAlign css_get_value_flex_align(CSSAST* ast, const char* key);
-ECSSValueType css_get_value_type(CSSAST* ast, const char* key);
+  ECSSValueType css_get_value_type(CSSAST* ast, const char* key);
+
+ECSSUnit css_get_value_unit(CSSAST* ast, const char* key);
 
 CSSAST *css(char *value);
 CSSAST *css_anon(char *value);
