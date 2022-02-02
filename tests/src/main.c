@@ -69,6 +69,32 @@ void test_font_face_css() {
   ASSERT(style != 0);
 }
 
+void test_font_face2_css() {
+  WHOAMI();
+  char* contents = read_file("sources/font-face2.css");
+  CSSAST* style = css(contents);
+
+  List* list = init_css_list(sizeof(CSSAST*));
+  CSSAST* rule = css_get_rule(style, "@font-face");
+
+  ASSERT(rule != 0);
+
+  CSSAST* call_node = css_get_value_call(rule, "src", "url");
+
+  ASSERT(call_node != 0);
+
+  ASSERT(call_node->args != 0);
+  ASSERT(call_node->args->size >= 1);
+
+  CSSAST* arg = (CSSAST*)call_node->args->items[0];
+
+  ASSERT(arg != 0);
+  ASSERT(arg->value_str != 0);
+  ASSERT(strcmp(arg->value_str, "https://fonts.gstatic.com/s/productsans/v18/pxiDypQkot1TnFhsFMOfGShVE9eOcEg.woff2") == 0);
+
+  ASSERT(style != 0);
+}
+
 void test_bigbig_css() {
   WHOAMI();
   char* contents = read_file("sources/bigbig.css");
@@ -100,6 +126,7 @@ int main(int argc, char* argv[]) {
   test_media_query_css();
   test_style_big_css();
   test_font_face_css();
+  test_font_face2_css();
   test_bigbig_css();
   test_news_css();
   test_mystyle_css();

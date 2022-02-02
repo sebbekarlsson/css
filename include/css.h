@@ -9,7 +9,7 @@ extern "C" {
 #include <parser.h>
 #include <css_context.h>
 
-
+typedef CSSAST CSSNode;
 
 typedef enum {
   CSS_DISPLAY_AUTO,
@@ -60,58 +60,61 @@ typedef struct CSS_COLOR_STRUCT {
   float a;
 } CSSColor;
 
-ECSSDisplay css_to_display(char *value);
-ECSSFlexDirection css_to_flex_direction(char *value);
-ECSSFlexAlign css_to_flex_align(char *value);
-ECSSTextAlign css_to_text_align(char *value);
-ECSSPosition css_to_position(char *value);
-CSSColor css_hex_to_color(char *value);
-CSSColor css_value_to_color(CSSAST *ast, const char *key);
+ECSSDisplay css_to_display(const char *value);
+ECSSFlexDirection css_to_flex_direction(const char *value);
+ECSSFlexAlign css_to_flex_align(const char *value);
+ECSSTextAlign css_to_text_align(const char *value);
+ECSSPosition css_to_position(const char *value);
+CSSColor css_hex_to_color(const char *value);
+CSSColor css_value_to_color(CSSNode *ast, const char *key);
 
-CSSColor css_get_value_color(CSSAST *ast, const char *key);
-ECSSTextAlign css_get_value_align(CSSAST* ast, const char* key);
-ECSSDisplay css_get_value_display(CSSAST* ast, const char* key);
-ECSSPosition css_get_value_position(CSSAST* ast, const char* key);
-ECSSFlexAlign css_get_value_flex_align(CSSAST* ast, const char* key);
-  ECSSValueType css_get_value_type(CSSAST* ast, const char* key);
+CSSColor css_get_value_color(CSSNode *ast, const char *key);
+ECSSTextAlign css_get_value_align(CSSNode* ast, const char* key);
+ECSSDisplay css_get_value_display(CSSNode* ast, const char* key);
+ECSSPosition css_get_value_position(CSSNode* ast, const char* key);
+ECSSFlexAlign css_get_value_flex_align(CSSNode* ast, const char* key);
+ECSSFlexDirection css_get_value_flex_direction(CSSNode* ast, const char* key);
+ECSSValueType css_get_value_type(CSSNode* ast, const char* key);
 
-ECSSUnit css_get_value_unit(CSSAST* ast, const char* key);
+ECSSUnit css_get_value_unit(CSSNode* ast, const char* key);
 
-CSSAST *css(char *value);
-CSSAST *css_anon(char *value);
+CSSNode *css(char *value);
+CSSNode *css_anon(char *value);
 
-void css_get_rules(CSSAST *ast, List *items);
-void css_get_declarations(CSSAST *ast, List *items);
+void css_get_rules(CSSNode *ast, List *items);
+void css_get_declarations(CSSNode *ast, List *items);
 
-CSSAST *css_get_value(CSSAST *ast, char *key);
+CSSNode *css_get_value(CSSNode *ast, const char *key);
 
-unsigned int css_value_is_set(CSSAST* ast, char* key);
+CSSNode* css_get_value_call(CSSNode* ast, const char* key, const char* call_name);
+
+unsigned int css_value_is_set(CSSNode* ast, const char* key);
 
 
-char *css_get_value_string(CSSAST *ast, char *key);
+char *css_get_value_string(CSSNode *ast, const char *key);
 
-void css_set_value_string(CSSAST *ast, char *key, char *value);
-void css_set_value_int(CSSAST *ast, char *key, float value);
-  void css_set_value_float(CSSAST *ast, char *key, float value);
+void css_set_value_string(CSSNode *ast, const char *key, char *value);
+void css_set_value_int(CSSNode *ast, const char *key, float value);
+  void css_set_value_float(CSSNode *ast, const char *key, float value);
 
-CSSAST* css_merge(CSSAST* a, CSSAST* b);
+CSSNode* css_merge(CSSNode* a, CSSNode* b);
 
-const char *css_crayola_to_hex(char *name);
+const char *css_crayola_to_hex(const char *name);
 
-int css_get_value_int(CSSAST *ast, char *key);
-float css_get_value_float(CSSAST *ast, char *key);
+int css_get_value_int(CSSNode *ast, const char *key);
+float css_get_value_float(CSSNode *ast, const char *key);
 
-float css_get_value_float_computed(CSSAST* ast, const char* key, CSSContext context);
+float css_get_value_float_computed(CSSNode* ast, const char* key, CSSContext context);
 
-void css_free(CSSAST *css);
+void css_free(CSSNode *css);
 
-CSSAST *css_get_rule(CSSAST *css, char *selector);
+CSSNode *css_get_rule(CSSNode *css, const char *selector);
 
-List* css_query(CSSAST* css, const char* selector);
+List* css_query(CSSNode* css, const char* selector);
 
-CSSAST *css_copy(CSSAST *css);
+CSSNode *css_copy(CSSNode *css);
 
-void css_reindex(CSSAST *css);
+void css_reindex(CSSNode *css);
 
 #ifdef __cplusplus
 }

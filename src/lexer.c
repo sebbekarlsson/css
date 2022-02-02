@@ -398,7 +398,7 @@ char *css_lexer_parse_string_until(CSSLexer *lexer, char c) {
   char *s = 0;
 
   while (lexer->c != c) {
-    STR_APPEND_CHAR(s, c);
+    STR_APPEND_CHAR(s, lexer->c);
     css_lexer_advance(lexer);
   }
 
