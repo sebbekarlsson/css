@@ -33,6 +33,9 @@ int main(int argc, char *argv[]) {
   CSSNode* m3 = css_merge(unwrapped, e);
   printf("%s\n", css_stringify(m3));
 
+
+  printf("COLOR: %s\n", css_get_value_string(m3, "color"));
+
   // CSSAST* a = css_anon("color: red; width: 32px; height: 32px");
   // CSSAST* b = css_anon("color: blue; width: 32px; height: 32px");
   // CSSAST* c = css_merge(a, b);

@@ -38,6 +38,7 @@ CSSIterator css_get_rules(CSSNode *ast, const char* selector) {
     css_list_append(items, ast);
   }
 
+  int count = 0;
   if (ast->children != 0) {
     for (int i = 0; i < ast->children->size; i++) {
 
@@ -59,6 +60,7 @@ CSSIterator css_get_rules(CSSNode *ast, const char* selector) {
 
       if (strcmp(selectorstr, selector) == 0) {
         css_list_append(items,child);
+        count++;
         free(selectorstr);
       } else {
         free(selectorstr);
@@ -67,7 +69,7 @@ CSSIterator css_get_rules(CSSNode *ast, const char* selector) {
     }
   }
 
-  if (!items || (items && (items->items == 0  || items->size <= 0))) {
+  if (count <= 0) {
     return (CSSIterator) { .length = 0 };
   }
 
@@ -76,7 +78,37 @@ CSSIterator css_get_rules(CSSNode *ast, const char* selector) {
   return it;
 }
 
+char* css_get_decl_name(CSSNode* ast) {
+  if (!ast) return 0;
+  if (ast->left && ast->left->value_str != 0) return ast->left->value_str;
+  if (ast->value_str != 0) return ast->value_str;
+  return 0;
+}
+
 void css_get_declarations(CSSNode *ast, List *items, unsigned int copy) {
+  if (!ast || !items) return;
+
+  if (ast->type == CSS_AST_DECL) {
+    css_list_append(items, ast);
+  }
+
+
+
+  if (ast->children != 0) {
+    for (int i = 0; i < ast->children->size; i++) {
+      CSSNode* child = css_list_at(ast->children, i);
+      if (!child) continue;
+
+      if (copy) {
+       child = css_copy(child);
+      }
+
+      css_get_declarations(child, items, copy);
+    }
+  }
+}
+
+void css_get_declarations_filtered(CSSNode *ast, List *items, unsigned int copy, map_T* lookup) {
   if (!ast || !items) return;
 
   if (ast->type == CSS_AST_DECL) {
@@ -87,10 +119,19 @@ void css_get_declarations(CSSNode *ast, List *items, unsigned int copy) {
     for (int i = 0; i < ast->children->size; i++) {
       CSSNode* child = css_list_at(ast->children, i);
       if (!child) continue;
+
+      char* name = css_get_decl_name(child);
+      if (name && map_get_value(lookup, name) && !child->is_important) continue;
+
       if (copy) {
        child = css_copy(child);
       }
-      css_get_declarations(child, items, copy);
+
+      if (name) {
+        map_set(lookup, name, child);
+      }
+
+      css_get_declarations_filtered(child, items, copy, lookup);
     }
   }
 }
@@ -551,10 +592,12 @@ void css_unset_value(CSSNode* ast, const char* key) {
     CSSNode* child = (CSSNode*)ast->children->items[i];
     if (!css_is_decl(child)) continue;
     if (!child->left) continue;
-    if (!child->left->value_str) continue;
 
-    if (strcmp(child->left->value_str, key) == 0)
+    unsigned int left_matches = child->left->value_str == 0 ? 0 : strcmp(child->left->value_str, key) == 0;
+    unsigned int self_matches = child->value_str != 0 && strcmp(child->value_str, key) == 0;
+    if (left_matches || self_matches) {
       css_list_remove(ast->children, child, (void(*)(void*))css_free);
+    }
   }
 
   if (ast->keyvalue) {
@@ -630,7 +673,14 @@ CSSNode* css_unwrap(CSSNode* css) {
   CSSNode* new_node = init_css_ast(CSS_AST_COMPOUND);
   new_node->children = init_css_list(sizeof(CSSNode*));
 
-  css_get_declarations(css, new_node->children, 1);
+  map_T* lookup = NEW_MAP();
+
+  css_get_declarations_filtered(css, new_node->children, 1, lookup);
+
+  map_free(lookup);
+  lookup = 0;
+
+  css_reindex(css);
 
   return new_node;
 }

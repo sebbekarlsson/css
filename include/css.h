@@ -83,7 +83,10 @@ CSSNode *css(char *value);
 CSSNode *css_anon(char *value);
 
 CSSIterator css_get_rules(CSSNode *ast, const char* selector);
-void css_get_declarations(CSSNode *ast, List *items, unsigned int copy);
+  void css_get_declarations(CSSNode *ast, List *items, unsigned int copy);
+void css_get_declarations_filtered(CSSNode *ast, List *items, unsigned int copy, map_T* lookup);
+
+  char* css_get_decl_name(CSSNode* ast);
 
 CSSNode *css_get_value(CSSNode *ast, const char *key);
 
