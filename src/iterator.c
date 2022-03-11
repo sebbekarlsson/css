@@ -23,3 +23,13 @@ CSSAST* css_iterator_next(CSSIterator* iterator) {
 
   return iterator->value;
 }
+
+void css_iterator_destroy(CSSIterator* iterator) {
+  if (iterator->values != 0) {
+    free(iterator->values);
+    iterator->values = 0;
+  }
+  iterator->value = 0;
+  iterator->length = 0;
+  iterator->i = 0;
+}

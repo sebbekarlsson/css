@@ -13,4 +13,6 @@ typedef struct {
 CSSIterator css_iterate(CSSAST** valus, uint32_t length);
 
 CSSAST* css_iterator_next(CSSIterator* iterator);
+
+void css_iterator_destroy(CSSIterator* iterator);
 #endif

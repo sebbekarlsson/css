@@ -83,7 +83,7 @@ CSSNode *css(char *value);
 CSSNode *css_anon(char *value);
 
 CSSIterator css_get_rules(CSSNode *ast, const char* selector);
-void css_get_declarations(CSSNode *ast, List *items);
+void css_get_declarations(CSSNode *ast, List *items, unsigned int copy);
 
 CSSNode *css_get_value(CSSNode *ast, const char *key);
 
@@ -117,7 +117,9 @@ List* css_query(CSSNode* css, const char* selector);
 
 CSSNode *css_copy(CSSNode *css);
 
-void css_reindex(CSSNode *css);
+  void css_reindex(CSSNode *css);
+
+CSSNode* css_unwrap(CSSNode* css);
 
 #ifdef __cplusplus
 }

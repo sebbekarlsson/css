@@ -10,9 +10,28 @@ int main(int argc, char *argv[]) {
 
   CSSAST* b = css(".button { color: red; } .box { position: absolute; } div { box-sizing: border-box; color: purple; }");
 
-  CSSAST* m = css_merge(a, b);
 
+  CSSAST* c = css_anon("color: red");
+  CSSAST* d = css_anon("color: blue; position: absolute;");
+  CSSAST* m = css_merge(a, b);
+  CSSAST* m2 = css_merge(c, d);
+
+  printf("--------------- 1 -----------------\n");
   printf("%s\n", css_stringify(m));
+
+
+  printf("--------------- 2 -----------------\n");
+  printf("%s\n", css_stringify(m2));
+
+  CSSAST* unwrapped = css_unwrap(m);
+
+  printf("--------------- 3 -----------------\n");
+  printf("%s\n", css_stringify(unwrapped));
+
+  printf("--------------- 4 -----------------\n");
+  CSSNode* e = css_anon("top: 0");
+  CSSNode* m3 = css_merge(unwrapped, e);
+  printf("%s\n", css_stringify(m3));
 
   // CSSAST* a = css_anon("color: red; width: 32px; height: 32px");
   // CSSAST* b = css_anon("color: blue; width: 32px; height: 32px");
