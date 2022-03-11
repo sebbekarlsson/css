@@ -8,6 +8,7 @@ extern "C" {
 #include <lexer.h>
 #include <parser.h>
 #include <css_context.h>
+#include <iterator.h>
 
 typedef CSSAST CSSNode;
 
@@ -81,7 +82,7 @@ ECSSUnit css_get_value_unit(CSSNode* ast, const char* key);
 CSSNode *css(char *value);
 CSSNode *css_anon(char *value);
 
-void css_get_rules(CSSNode *ast, List *items);
+CSSIterator css_get_rules(CSSNode *ast, const char* selector);
 void css_get_declarations(CSSNode *ast, List *items);
 
 CSSNode *css_get_value(CSSNode *ast, const char *key);
@@ -109,6 +110,8 @@ float css_get_value_float_computed(CSSNode* ast, const char* key, CSSContext con
 void css_free(CSSNode *css);
 
 CSSNode *css_get_rule(CSSNode *css, const char *selector);
+
+CSSNode *css_get_rule_nth(CSSNode *css, const char *selector, uint32_t n);
 
 List* css_query(CSSNode* css, const char* selector);
 

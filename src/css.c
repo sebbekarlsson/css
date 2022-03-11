@@ -6,6 +6,7 @@
 #include <token.h>
 #include <stdio.h>
 #include <assert.h>
+#include <iterator.h>
 
 CSSNode *css(char *value) {
   CSSLexer *lexer = init_css_lexer(value);
@@ -29,7 +30,9 @@ CSSNode *css_anon(char *value) {
   return root;
 }
 
-void css_get_rules(CSSNode *ast, List *items) {
+CSSIterator css_get_rules(CSSNode *ast, const char* selector) {
+
+  List* items = init_css_list(sizeof(CSSNode*));
 
   if (ast->type == CSS_AST_RULE) {
     css_list_append(items, ast);
@@ -37,9 +40,30 @@ void css_get_rules(CSSNode *ast, List *items) {
 
   if (ast->children != 0) {
     for (int i = 0; i < ast->children->size; i++) {
-      css_get_rules(css_list_at(ast->children, i), items);
+
+         CSSNode *child = css_list_at(ast->children, i);
+      if (child->type != CSS_AST_RULE)
+        continue;
+      char *selectorstr = ast_to_string(child);
+
+
+      if (!selectorstr)
+        continue;
+
+      if (strcmp(selectorstr, selector) == 0) {
+        css_list_append(items,child);
+        free(selectorstr);
+      } else {
+        free(selectorstr);
+      }
+
     }
   }
+
+
+  CSSIterator it = css_iterate((CSSNode**)items->items, items->size);
+  free(items);
+  return it;
 }
 
 void css_get_declarations(CSSNode *ast, List *items) {
@@ -59,6 +83,33 @@ CSSNode *css_get_rule(CSSNode *css, const char *selector) {
   CSSNode *rule = 0;
   if (css->children != 0) {
     for (int i = 0; i < css->children->size; i++) {
+      CSSNode *child = css_list_at(css->children, i);
+      if (child->type != CSS_AST_RULE)
+        continue;
+      char *selectorstr = ast_to_string(child);
+
+      if (!selectorstr)
+        continue;
+
+      if (strcmp(selectorstr, selector) == 0) {
+        rule = child;
+        free(selectorstr);
+        break;
+      } else {
+        free(selectorstr);
+      }
+    }
+  }
+
+  return rule;
+}
+
+CSSNode *css_get_rule_nth(CSSNode *css, const char *selector, uint32_t n) {
+  CSSNode *rule = 0;
+  if (css->children != 0) {
+    for (int i = 0; i < css->children->size; i++) {
+      if (i < n) continue;
+
       CSSNode *child = css_list_at(css->children, i);
       if (child->type != CSS_AST_RULE)
         continue;
@@ -511,13 +562,42 @@ void css_add_decl(CSSNode* ast, CSSNode* decl) {
   map_set(ast->keyvalue, newdecl->left->value_str, newdecl->right);
 }
 
-CSSNode* css_merge(CSSNode* a, CSSNode* b) {
+CSSNode* css_merge_rules(CSSNode* a, CSSNode* b) {
   if (a->type != CSS_AST_RULE || b->type != CSS_AST_RULE) {
     fprintf(stderr, "CSS: Can only merge rules.\n");
   }
   for (int i = 0; i < (int)b->children->size; i++) {
     CSSNode* child = (CSSNode*)b->children->items[i];
     css_add_decl(a, child);
+  }
+
+  return a;
+}
+
+CSSNode* css_merge(CSSNode* a, CSSNode* b) {
+  if (!b->children) return a;
+  for (int i = 0; i < (int)b->children->size; i++) {
+    CSSNode* child = (CSSNode*)b->children->items[i];
+    if (!child) continue;
+
+    if (!child->children) continue;
+    if (child->type != CSS_AST_RULE) continue;
+
+    char* selector = ast_to_string(child);
+    if (!selector) continue;
+    CSSNode* a_rule = css_get_rule(a, selector);
+    if (!a_rule && child->type == CSS_AST_RULE) {
+      CSSNode* new_rule = css_copy(child);
+
+      css_list_append(a->children, new_rule);
+      continue;
+    }
+
+    if (a_rule == 0) continue;
+
+    css_merge_rules(a_rule, child);
+
+
   }
 
   return a;

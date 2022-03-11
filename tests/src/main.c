@@ -73,9 +73,9 @@ void test_font_face2_css() {
   WHOAMI();
   char* contents = read_file("sources/font-face2.css");
   CSSAST* style = css(contents);
+  ASSERT(style != 0);
 
-  List* list = init_css_list(sizeof(CSSAST*));
-  CSSAST* rule = css_get_rule(style, "@font-face");
+  CSSAST* rule = css_get_rule_nth(style, "@font-face", 0);
 
   ASSERT(rule != 0);
 
@@ -92,7 +92,35 @@ void test_font_face2_css() {
   ASSERT(arg->value_str != 0);
   ASSERT(strcmp(arg->value_str, "https://fonts.gstatic.com/s/productsans/v18/pxiDypQkot1TnFhsFMOfGShVE9eOcEg.woff2") == 0);
 
+}
+
+void test_iterator_font_face2_css() {
+  WHOAMI();
+
+  char* contents = read_file("sources/font-face2.css");
+  CSSAST* style = css(contents);
   ASSERT(style != 0);
+
+  CSSIterator it = css_get_rules(style, "@font-face");
+
+  ASSERT(it.length >= 4);
+
+
+  CSSAST* rule = 0;
+  while ((rule = css_iterator_next(&it)) != 0) {
+    ASSERT(rule != 0);
+    ASSERT(rule->type == CSS_AST_RULE);
+    CSSAST* call_node = css_get_value_call(rule, "src", "url");
+
+    ASSERT(call_node != 0);
+    ASSERT(call_node->args != 0);
+    ASSERT(call_node->args->size >= 1);
+
+    CSSAST* arg = (CSSAST*)call_node->args->items[0];
+
+    ASSERT(arg != 0);
+    ASSERT(arg->value_str != 0);
+  }
 }
 
 void test_bigbig_css() {
@@ -127,6 +155,7 @@ int main(int argc, char* argv[]) {
   test_style_big_css();
   test_font_face_css();
   test_font_face2_css();
+  test_iterator_font_face2_css();
   test_bigbig_css();
   test_news_css();
   test_mystyle_css();
