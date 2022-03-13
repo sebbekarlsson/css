@@ -188,10 +188,46 @@ CSSNode *css_get_rule_nth(CSSNode *css, const char *selector, uint32_t n) {
   return rule;
 }
 
+
+CSSNode* css_transform_value(CSSNode* parent, CSSNode* value, const char* key) {
+  if (value) return value;
+
+
+
+  if (strstr(key, "padding") != 0) {
+
+    CSSNode* padding = css_get_value(parent, "padding");
+    if (!padding) return 0;
+    if (!padding->children) return 0;
+    List* children = padding->children;
+    if (children->size <= 0) return 0;
+
+    if (strcmp(key, "padding-top") == 0) {
+      return padding;
+    }
+
+    if (strcmp(key, "padding-right") == 0  && children->size >= (0+1)) {
+      return (CSSNode*)children->items[0];
+    }
+
+    if (strcmp(key, "padding-bottom") == 0  && children->size >= (0+2)) {
+
+      return (CSSNode*)children->items[1];
+    }
+
+    if (strcmp(key, "padding-left") == 0  && children->size >= (0+3)) {
+
+      return (CSSNode*)children->items[2];
+    }
+  }
+
+  return value;
+}
+
 CSSNode *css_get_value(CSSNode *ast, const char *key) {
   map_bucket_T *bucket = map_get(ast->keyvalue, (char*)key);
   if (bucket != 0) {
-    return bucket->value;
+    return css_transform_value(ast, bucket->value, key);
   }
   CSSNode *value_ast = 0;
   List *declarations = init_css_list(sizeof(CSSNode *));
@@ -210,7 +246,7 @@ CSSNode *css_get_value(CSSNode *ast, const char *key) {
     }
   }
   css_list_free(declarations);
-  return value_ast;
+  return css_transform_value(ast, value_ast, key);
 }
 
 CSSNode* css_get_value_call(CSSNode* ast, const char* key, const char* call_name) {

@@ -147,6 +147,25 @@ void test_mystyle_css() {
   ASSERT(style != 0);
 }
 
+void test_padding_css() {
+  WHOAMI();
+  char* contents = read_file("sources/padding.css");
+  CSSAST* style = css(contents);
+
+
+  int padding_top = css_get_value_int(style, "padding-top");
+  int padding_right = css_get_value_int(style, "padding-right");
+  int padding_bottom = css_get_value_int(style, "padding-bottom");
+  int padding_left = css_get_value_int(style, "padding-left");
+
+  ASSERT(padding_top == 25);
+  ASSERT(padding_right == 50);
+  ASSERT(padding_bottom == 75);
+  ASSERT(padding_left == 100);
+
+  ASSERT(style != 0);
+}
+
 int main(int argc, char* argv[]) {
   test_color_css();
   test_wildcard_css();
@@ -159,5 +178,6 @@ int main(int argc, char* argv[]) {
   test_bigbig_css();
   test_news_css();
   test_mystyle_css();
+  test_padding_css();
   return 0;
 }
