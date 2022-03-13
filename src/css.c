@@ -186,17 +186,45 @@ CSSNode *css_get_rule_nth(CSSNode *css, const char *selector, uint32_t n) {
   }
 
   return rule;
+
+}
+
+
+static CSSNode *_css_get_value(CSSNode *ast, const char *key) {
+  map_bucket_T *bucket = map_get(ast->keyvalue, (char*)key);
+  if (bucket != 0) {
+    return bucket->value;//css_transform_value(ast, bucket->value, key);
+  }
+  CSSNode *value_ast = 0;
+  List *declarations = init_css_list(sizeof(CSSNode *));
+  css_get_declarations(ast, declarations, 0);
+
+  for (int i = 0; i < declarations->size; i++) {
+    CSSNode *decl = css_list_at(declarations, i);
+    if (!decl->left)
+      continue;
+    CSSNode *left = decl->left;
+    if (!left->value_str)
+      continue;
+
+    if (strcmp(left->value_str, key) == 0) {
+      value_ast = decl->right;
+    }
+  }
+  css_list_free(declarations);
+  return value_ast;//css_transform_value(ast, value_ast, key);
 }
 
 
 CSSNode* css_transform_value(CSSNode* parent, CSSNode* value, const char* key) {
   if (value) return value;
-
+  if (!key) return 0;
+  if (!parent) return 0;
 
 
   if (strstr(key, "padding") != 0) {
 
-    CSSNode* padding = css_get_value(parent, "padding");
+    CSSNode* padding = _css_get_value(parent, "padding");
     if (!padding) return 0;
     if (!padding->children) return 0;
     List* children = padding->children;
@@ -206,16 +234,16 @@ CSSNode* css_transform_value(CSSNode* parent, CSSNode* value, const char* key) {
       return padding;
     }
 
-    if (strcmp(key, "padding-right") == 0  && children->size >= (0+1)) {
+    if (strcmp(key, "padding-right") == 0  && children->size >= 1) {
       return (CSSNode*)children->items[0];
     }
 
-    if (strcmp(key, "padding-bottom") == 0  && children->size >= (0+2)) {
+    if (strcmp(key, "padding-bottom") == 0  && children->size >= 2) {
 
       return (CSSNode*)children->items[1];
     }
 
-    if (strcmp(key, "padding-left") == 0  && children->size >= (0+3)) {
+    if (strcmp(key, "padding-left") == 0  && children->size >= 3) {
 
       return (CSSNode*)children->items[2];
     }
