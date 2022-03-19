@@ -151,19 +151,64 @@ void test_padding_css() {
   WHOAMI();
   char* contents = read_file("sources/padding.css");
   CSSAST* style = css(contents);
-
-
-  int padding_top = css_get_value_int(style, "padding-top");
-  int padding_right = css_get_value_int(style, "padding-right");
-  int padding_bottom = css_get_value_int(style, "padding-bottom");
-  int padding_left = css_get_value_int(style, "padding-left");
-
-  ASSERT(padding_top == 25);
-  ASSERT(padding_right == 50);
-  ASSERT(padding_bottom == 75);
-  ASSERT(padding_left == 100);
-
   ASSERT(style != 0);
+
+
+  CSSAST* div = css_get_rule(style, "div");
+  ASSERT(div != 0);
+
+  {
+    int padding_top = css_get_value_int(div, "padding-top");
+    int padding_right = css_get_value_int(div, "padding-right");
+    int padding_bottom = css_get_value_int(div, "padding-bottom");
+    int padding_left = css_get_value_int(div, "padding-left");
+
+    ASSERT(padding_top == 25);
+    ASSERT(padding_right == 50);
+    ASSERT(padding_bottom == 75);
+    ASSERT(padding_left == 100);
+  }
+
+  CSSAST* span = css_get_rule(style, "span");
+  ASSERT(span != 0);
+  ASSERT(span != div);
+
+  {
+    int padding_top = css_get_value_int(span, "padding-top");
+    ASSERT(padding_top == 8);
+  }
+}
+
+void test_margin_css() {
+  WHOAMI();
+  char* contents = read_file("sources/margin.css");
+  CSSAST* style = css(contents);
+  ASSERT(style != 0);
+
+
+  CSSAST* div = css_get_rule(style, "div");
+  ASSERT(div != 0);
+
+  {
+    int margin_top = css_get_value_int(div, "margin-top");
+    int margin_right = css_get_value_int(div, "margin-right");
+    int margin_bottom = css_get_value_int(div, "margin-bottom");
+    int margin_left = css_get_value_int(div, "margin-left");
+
+    ASSERT(margin_top == 25);
+    ASSERT(margin_right == 50);
+    ASSERT(margin_bottom == 75);
+    ASSERT(margin_left == 100);
+  }
+
+  CSSAST* span = css_get_rule(style, "span");
+  ASSERT(span != 0);
+  ASSERT(span != div);
+
+  {
+    int margin_top = css_get_value_int(span, "margin-top");
+    ASSERT(margin_top == 8);
+  }
 }
 
 int main(int argc, char* argv[]) {
@@ -179,5 +224,6 @@ int main(int argc, char* argv[]) {
   test_news_css();
   test_mystyle_css();
   test_padding_css();
+  test_margin_css();
   return 0;
 }

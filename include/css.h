@@ -54,6 +54,12 @@ CSS_AUTO,
 CSS_NONE
 } ECSSValueType;
 
+typedef enum {
+CSS_OVERFLOW_AUTO,
+CSS_OVERFLOW_SCROLL,
+CSS_OVERFLOW_HIDDEN
+} ECSSOverflow;
+
 typedef struct CSS_COLOR_STRUCT {
   float r;
   float g;
@@ -65,10 +71,12 @@ ECSSDisplay css_to_display(const char *value);
 ECSSFlexDirection css_to_flex_direction(const char *value);
 ECSSFlexAlign css_to_flex_align(const char *value);
 ECSSTextAlign css_to_text_align(const char *value);
+ECSSOverflow css_to_overflow(const char *value);
 ECSSPosition css_to_position(const char *value);
 CSSColor css_hex_to_color(const char *value);
 CSSColor css_value_to_color(CSSNode *ast, const char *key);
 
+ECSSOverflow css_get_value_overflow(CSSNode *ast, const char *key);
 CSSColor css_get_value_color(CSSNode *ast, const char *key);
 ECSSTextAlign css_get_value_align(CSSNode* ast, const char* key);
 ECSSDisplay css_get_value_display(CSSNode* ast, const char* key);

@@ -216,6 +216,30 @@ static CSSNode *_css_get_value(CSSNode *ast, const char *key) {
 }
 
 
+#define CSS_UNWRAP_VALUE(name)\
+{\
+      CSSNode* _node = _css_get_value(parent, name);\
+    if (!_node) return 0;\
+    List* children = _node->children;\
+\
+    if (strcmp(key, name"-top") == 0) {\
+      return _node;\
+    }\
+\
+    if (strcmp(key, name"-right") == 0) {\
+      return (CSSNode*) (children != 0 && children->size >= 1 ? children->items[0] : _node);\
+    }\
+\
+    if (strcmp(key, name"-bottom") == 0) {\
+\
+      return (CSSNode*)  (children != 0 && children->size >= 2 ? children->items[1] : _node);\
+    }\
+\
+    if (strcmp(key, name"-left") == 0) {\
+      return (CSSNode*)( children != 0 && children->size >= 3 ? children->items[2] : _node);\
+    }\
+}
+
 CSSNode* css_transform_value(CSSNode* parent, CSSNode* value, const char* key) {
   if (value) return value;
   if (!key) return 0;
@@ -223,30 +247,10 @@ CSSNode* css_transform_value(CSSNode* parent, CSSNode* value, const char* key) {
 
 
   if (strstr(key, "padding") != 0) {
-
-    CSSNode* padding = _css_get_value(parent, "padding");
-    if (!padding) return 0;
-    if (!padding->children) return 0;
-    List* children = padding->children;
-    if (children->size <= 0) return 0;
-
-    if (strcmp(key, "padding-top") == 0) {
-      return padding;
-    }
-
-    if (strcmp(key, "padding-right") == 0  && children->size >= 1) {
-      return (CSSNode*)children->items[0];
-    }
-
-    if (strcmp(key, "padding-bottom") == 0  && children->size >= 2) {
-
-      return (CSSNode*)children->items[1];
-    }
-
-    if (strcmp(key, "padding-left") == 0  && children->size >= 3) {
-
-      return (CSSNode*)children->items[2];
-    }
+    CSS_UNWRAP_VALUE("padding")
+  }
+  else if (strstr(key, "margin") != 0) {
+    CSS_UNWRAP_VALUE("margin")
   }
 
   return value;
@@ -576,6 +580,16 @@ ECSSPosition css_to_position(const char *value) {
   return CSS_POSITION_AUTO;
 }
 
+ECSSOverflow css_to_overflow(const char *value) {
+  if (value == 0) return CSS_OVERFLOW_AUTO;
+
+  if (strcmp(value, "auto")) return CSS_OVERFLOW_AUTO;
+  if (strcmp(value, "scroll")) return CSS_OVERFLOW_SCROLL;
+  if (strcmp(value, "hidden")) return CSS_OVERFLOW_HIDDEN;
+
+  return CSS_OVERFLOW_AUTO;
+}
+
 ECSSDisplay css_get_value_display(CSSNode* ast, const char* key) {
   char* str = css_get_value_string(ast, (char *)key);
   return css_to_display(str);
@@ -753,6 +767,11 @@ CSSColor css_get_value_color(CSSNode *ast, const char *key) {
   return css_value_to_color(ast, key);
 }
 
+ECSSOverflow css_get_value_overflow(CSSNode *ast, const char *key) {
+  char* str = css_get_value_string(ast, (char*)key);
+  return css_to_overflow(str);
+}
+
 ECSSTextAlign css_get_value_align(CSSNode* ast, const char* key) {
   char* str = css_get_value_string(ast, (char*)key);
   return css_to_text_align(str);
@@ -803,7 +822,7 @@ float css_get_value_float_computed(CSSNode* ast, const char* key, CSSContext con
     case CSS_UNIT_EM: z = x * context.em; break;
     case CSS_UNIT_PX: z = x; break;
     case CSS_UNIT_VH: z = percentage(x, context.vh); break;
-    case CSS_UNIT_VW: z = percentage(x, context.vh); break;
+    case CSS_UNIT_VW: z = percentage(x, context.vw); break;
     default: { z = x; } break;
   }
 
