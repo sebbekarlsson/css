@@ -211,6 +211,29 @@ void test_margin_css() {
   }
 }
 
+void test_percent_css() {
+  WHOAMI();
+  char* contents = read_file("sources/percent.css");
+  CSSAST* style = css(contents);
+  ASSERT(style != 0);
+
+  CSSContext cont = {0};
+  cont.width = 640;
+  cont.height = 480;
+  cont.vw = 640;
+  cont.vh = 480;
+
+  CSSAST* div = css_get_rule(style, "div");
+  ASSERT(div != 0);
+
+  float width = css_get_value_float_computed(style, "width", cont);
+  float height = css_get_value_float_computed(style, "height", cont);
+
+  printf("-->%12.6f\n", width);
+  printf("-->%12.6f\n", height);
+
+}
+
 int main(int argc, char* argv[]) {
   test_color_css();
   test_wildcard_css();
@@ -225,5 +248,6 @@ int main(int argc, char* argv[]) {
   test_mystyle_css();
   test_padding_css();
   test_margin_css();
+  test_percent_css();
   return 0;
 }
